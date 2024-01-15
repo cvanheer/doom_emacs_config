@@ -1,0 +1,7 @@
+#+title: Elfeed
+
+# Some code to use elfeed to get articles from RSS feeds
+
+* Preprint severs :elfeed:
+** [[http://connect.biorxiv.org/biorxiv_xml.php?subject=neuroscience+animal_behavior_and_cognition][Animal behav & cog]] :PhD:
+** [[http://connect.biorxiv.org/biorxiv_xml.php?subject=neuroscience][Neuro]] :PhD:
