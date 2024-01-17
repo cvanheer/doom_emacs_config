@@ -1,4 +1,5 @@
-;;; elfeed_score.el -*- lexical-binding: t; -*-
+;;; elfeed_score.el -*- lexical-binding: t; -*-nk
+;;;
 
 ((version 10)
  ("title"

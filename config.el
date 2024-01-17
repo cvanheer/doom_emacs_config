@@ -116,8 +116,8 @@
 
 ;; ================= THEMES =======================
 ;; Note: themes are stored in /Applications/Emacs.app/Contents/Resources/etc
-(add-to-list 'load-path "~/.config/doom/doom-nano-modeline/")
-(add-to-list 'load-path "~/.config/doom/doom-nano-testing/")
+(add-to-list 'load-path "~/.config/doom/packages/doom-nano-modeline/")
+(add-to-list 'load-path "~/.config/doom/packages/doom-nano-testing/")
 
  (use-package! doom-nano-modeline
   :config
@@ -143,15 +143,19 @@
   (doom-themes-org-config))
 
 
-(add-to-list 'load-path "~/.config/doom/doom-nano-testing-main/load-nano.el")
+(add-to-list 'load-path "~/.config/doom/packages/doom-nano-testing-main/load-nano.el")
 
 
-(load "~/.config/doom/org_agenda_settings.el")
-(load "~/.config/doom/latex_workflow.el")
-(load "~/.config/doom/dashboard.el")
-(load "~/.config/doom/ess_setup.el")
-(load "~/.config/doom/elfeed.el")
-(load "~/.config/doom/ox_latex_templates.el")
+(load "~/.config/doom/setup_org_agenda.el")
+(load "~/.config/doom/setup_latex_workflow.el")
+(load "~/.config/doom/setup_dashboard.el")
+(load "~/.config/doom/setup_ess.el")
+(load "~/.config/doom/setup_elfeed.el")
+
+;(load "~/.config/doom/packages/svg-tag-mode/svg-tag-mode.el")
+;(load "~/.config/doom/packages/nano-theme/nano-theme.el")
+;(load "~/.config/doom/packages/book-mode/book-mode.el")
+;(load "~/.config/doom/packages/book-mode/book-mode-npr-settings.el")
 
 ;; Markdown mode
 (use-package poly-markdown)
