@@ -97,7 +97,6 @@
  '((R . t)))
 (add-to-list 'org-structure-template-alist '("r" "#+BEGIN_SRC R :exports both :results graphics :file ./fig_1?.png\n\n#+END_SRC" "<src lang=\"?\">\n\n</src>"))
 
-
 (use-package centaur-tabs
   :demand
   :config
@@ -113,7 +112,6 @@
 (global-visual-line-mode t)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
-
 ;; ================= THEMES =======================
 ;; Note: themes are stored in /Applications/Emacs.app/Contents/Resources/etc
 (add-to-list 'load-path "~/.config/doom/packages/doom-nano-modeline/")
@@ -123,7 +121,6 @@
   :config
   (doom-nano-modeline-mode 1)
   (global-hide-mode-line-mode 1))
-
 
 (use-package doom-themes
   :ensure t 
@@ -145,39 +142,47 @@
 
 (add-to-list 'load-path "~/.config/doom/packages/doom-nano-testing-main/load-nano.el")
 
-
 (load "~/.config/doom/setup_org_agenda.el")
 (load "~/.config/doom/setup_latex_workflow.el")
 (load "~/.config/doom/setup_dashboard.el")
 (load "~/.config/doom/setup_ess.el")
 (load "~/.config/doom/setup_elfeed.el")
+(load "~/.config/doom/setup_markdown.el") ; this includes quarto mode
+;(load "~/.config/doom/setup_org_gcal.el")
 
 ;(load "~/.config/doom/packages/svg-tag-mode/svg-tag-mode.el")
 ;(load "~/.config/doom/packages/nano-theme/nano-theme.el")
 ;(load "~/.config/doom/packages/book-mode/book-mode.el")
 ;(load "~/.config/doom/packages/book-mode/book-mode-npr-settings.el")
 
-;; Markdown mode
-(use-package poly-markdown)
-(add-to-list 'auto-mode-alist '("\\.md" . poly-markdown-mode))
-(define-hostmode poly-markdown-hostmode
-  :mode 'markdown-mode)
 
-(require 'centaur-tabs)
-(after! centaur-tabs
-  (centaur-tabs-mode 1) ; run at startup
-  ;(centaur-tabs-headline-match)
-  (setq centaur-tabs-style "slant"
-        centaur-tabs-height 32
-        centaur-tabs-set-icons t
-        centaur-tabs-gray-out-icons 'buffer
-        centaur-tabs-set-bar 'below
-        centaur-tabs-set-modified-marker t
-        centaur-tabs-modified-marker "*"
-        ;centaur-tabs-change-fonts "Menlo" 120
-        )
-  )
+;; Add an org mode template for thesis writing using yassnippet
+;; https://www.youtube.com/watch?v=W-bRZlseNm0
+;; The key in each yas snippet tells you what you need to press e.g. "<t" followed by the TAB key to get the snippet of text
+(use-package yasnippet
+  :config
+  (setq yas-snippet-dirs '("~/.config/doom/yas-snippets"))
+  (yas-global-mode 1))
 
+; run this everytime emacs starts up to get calendar events
+;(call-process "/bin/bash" "~/.config/doom/calendar/get_ics_email")
+
+; Create function to get calendar updating working
+; This function runs get_ics_mail which is an executable script that imports my gmail calendar
+; It then writes this to an ics file which is converted to an org file by ics2org which I have installed
+; using the terminal.
+; This can also be done manually using the terminal  and it has a shortcut in the bash profile of
+; my mac
+(defun my/get_cal()
+  "An interactive function which runs scripts to get my gmail calendar to sync to my org agenda"
+(interactive) ; allows you to use M-x
+(shell-command "sh ~/.config/doom/calendar/get_ics_email")
+(shell-command  "icsorg"))
+
+;(global-set-key (kbd "C-c c") "my/get_cal")
+
+; Run the functionmy/get_cal ; can also use M-x get_cal as well
+(my/get_cal)
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.

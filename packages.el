@@ -74,3 +74,11 @@
 (package! doom-nano-modeline
   :recipe (:host github
   :repo "ronisbr/doom-nano-modeline"))
+
+;; (package! org-imenu
+;;   :recipe (:host github
+;;            :repo "rougier/org-imenu"))
+
+;; (package! org-imenu
+;;   :recipe (:host github
+;;                  :repo "rougier/pdf-drop-mode"))
