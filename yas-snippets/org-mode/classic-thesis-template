@@ -1,0 +1,22 @@
+# -*- mode: snippet -*-
+# name: classic-thesis-template
+# key: <t
+# --
+#+TITLE: ${1:title}
+#+LaTeX_CLASS: classic-thesis
+#+EXPORT_FILE_NAME: ${2:filename}
+#+cite_export: biblatex
+#+LATEX_COMPILER: XeLaTeX
+#+bibliography: "~/PhD/BIBTEX/PhD_betterbibtex.bib" $0
+
+#+begin_src: latex
+\chapter{${3:chaptername}}\label{ch:introduction}
+#+end_src:
+
+#+begin_src: latex
+\manualmark
+\refstepcounter{dummy}
+\label{app:bibliography}
+\printbibliography
+\end{document}
+#+end_src:

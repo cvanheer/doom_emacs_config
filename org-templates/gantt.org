@@ -1,0 +1,82 @@
+#+OPTIONS: toc:nil
+#+TITLE: title
+#+LaTeX_CLASS: gantt-chart
+#+EXPORT_FILE_NAME: filename
+#+LATEX_COMPILER: XeLaTeX
+#+END:
+
+#+begin_src: latex
+\begin{document}
+
+% Start gantt table
+\begin{longtable}{p{\linewidth}}
+
+  \resizebox{\linewidth}{!}{
+
+  \begin{ganttchart}[
+      hgrid,
+      vgrid,
+      title label font=\bfseries\footnotesize,
+      title label anchor/.append style={below=-1.6ex},
+      include title in canvas=false,
+      % ----- BAR TASKS -------------
+      bar/.append style={fill=teal!40, draw = none},
+      bar incomplete/.append style={fill=red!40, draw = none},%
+      bar height=.6,
+      bar label font=\normalsize\color{teal},
+      bar top shift = .2,
+      % Progress bar
+      progress label text={\pgfmathprintnumber[fixed, precision=1]{#1}\%},
+      bar progress label node/.append style={anchor=center, xshift = -2em},
+      % ----- GROUP SUBTASKS -------------
+      group label font=\normalsize\color{black},
+      group top shift= 0.3,
+      group height=.23,
+      group peaks height=.2,
+      group peaks width=.1,
+      group/.append style={draw=wisteria, fill = wisteria},
+      milestone/.append style={fill=red, draw=red, xscale=0.25},
+      % Units that you need to experiment with if you need everything to squish on the one
+      % page - try changing the ratio of xunit to yunit chart
+      x unit =2cm,
+      y unit title=1cm,
+      y unit chart=0.4cm,
+      expand chart=\textwidth,
+      % The numbers in curly braces below here {} are indexing the numbers you want the table to span
+      ]{4}{12} % Adjust the time range as needed
+
+      % Title and timeline
+      \gantttitle{Timeline}{9} \\
+
+      % Range of numbers you want the table to span over
+      \gantttitlelist{4,...,12}{1} \\
+
+      % *---* CHAPTERS 1 AND 2 *---*
+      \ganttgroup{Chapter 1 and 2 - Literature review}{5}{11} \\
+      \ganttbar[name=task1, progress = 100]{Initial literature review}{4}{5} \\
+      \ganttbar[name=task2, progress = 20]{Rewrite section on probabilistic learning}{6}{9} \\
+      \ganttbar[name=task3, progress = 0]{Rewrite section Indvidual difference literature}{7}{10} \\
+      \ganttnewline
+
+      \ganttmilestone[name=milestone1]{Intro draft}{10} \\
+      \ganttnewline
+
+      % * --- * LINKS BETWEEN TASKS AND MILESTONES * --- *
+      % Example of how this might work:
+      % Milestone 1 = INTRO DRAFT
+      % Milestone 2 = PAPER 1 DRAFT
+      % Milestone 3 = PAPER 2 DRAFT
+      % Milestone 4 = COMPLETION SEMINAR
+      % Milestone 5 = SUBMISSION
+      \ganttmilestone[name=milestone5]{Thesis drafting and submission}{11}
+      \ganttlink{milestone1}{milestone5}
+
+
+    \end{ganttchart}
+
+  }
+\end{longtable}
+
+\end{document}
+
+#+end_src:

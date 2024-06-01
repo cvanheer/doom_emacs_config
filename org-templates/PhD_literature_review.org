@@ -1,0 +1,32 @@
+
+* Paper details
+
+📚 title: {title}
+ 👥 author(s): { author}
+ 📆 year :  {year}
+ 🌏 doi: {doi}
+ 📝 tags:
+ 📜 journal: {journal}
+
+
+* TODO 🔄 Process:
+
+** TODO What is the author trying to say?
+
+** TODO Is the structure clear and logical?
+
+** TODO What is the thesis?
+
+** TODO What claims are made?
+
+** TODO What evidence is given?
+
+** TODO Am I convinced?
+
+** TODO Reasoning logical and consistent?
+
+** TODO Definitions, data representation
+
+** TODO How it informs my work
+
+** TODO General feelings and next steps
