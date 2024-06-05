@@ -1,5 +1,7 @@
 ;;; setup_markdown.el
 ;;; -*- lexical-binding: t; -*-
+;;;
+
 
 ;; Markdown mode
 (use-package poly-markdown)
@@ -11,8 +13,12 @@
 
 ; Quarto mode
 (use-package quarto-mode
-  :mode (("\\.Rmd" . poly-quarto-mode))
+  :mode (("\\.qmd" . poly-quarto-mode))
   )
+
+;; Note that the following is not necessary to run quarto-mode in .qmd files! It's merely illustrating
+;; how to associate different extensions to the mode.
+;(add-to-list 'auto-mode-alist '("\\.qmd\\'" . poly-quarto-mode))
 
 (require 'centaur-tabs)
 (after! centaur-tabs

@@ -56,29 +56,47 @@
 (package! centaur-tabs)
 (package! theme-changer)
 (package! marginalia)
+
 (package! bibtex-completion)
+(package! helm-bibtex)
+(package! latex-preview-pane)
+(package! ts) ; for elgantt gantt chart package
+(package! s) ; for elgantt gantt chart package
+(package! dash) ; for elgantt gantt chart package
+(package! deft)
+(package! all-the-icons)
+(package! nerd-icons)
+
 ; Org roam bibtex
+(package! org-roam)
 (package! org-roam-bibtex
   :recipe (:host github :repo "org-roam/org-roam-bibtex"))
-(package! auctex)
+
 (package! cdlatex)
 (package! citar)
 (package! citar-embark)
+(package! citar-org-roam)
 (package! svg-lib)
 (package! catppuccin-theme)
+(package! auctex)
+(package! latex-preview-pane)
+
 ; Elfeed for reading in RSS feeds
 (package! elfeed)
 (package! elfeed-org)
 (package! elfeed-score)
+(package! ess-view-data)
+(package! vertico)
+(package! flycheck)
+(package! yasnippet)
+
+; Markdown / R / quarto
+(package! polymode)
+(package! poly-markdown)
+(package! markdown-mode)
+;(package! quarto-mode)
+(package! request)
 
 (package! doom-nano-modeline
   :recipe (:host github
   :repo "ronisbr/doom-nano-modeline"))
-
-;; (package! org-imenu
-;;   :recipe (:host github
-;;            :repo "rougier/org-imenu"))
-
-;; (package! org-imenu
-;;   :recipe (:host github
-;;                  :repo "rougier/pdf-drop-mode"))

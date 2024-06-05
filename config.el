@@ -50,16 +50,14 @@
 ; Disable projectile tracking projects so you can add them manually using the known project function
 (setq projectile-track-known-projects-automatically nil)
 
-(setq doom-font (font-spec :family "Fantasque Sans Mono" :size 12)
-      doom-variable-pitch-font (font-spec :family "Fantasque Sans Mono" :size 12))
-
+(setq doom-font (font-spec :family "Ubuntu Mono" :size 12)
+      doom-variable-pitch-font (font-spec :family "Ubuntu Mono" :size 12))
 
 (use-package treemacs-projectile
-  :after (treemacs projectile)
-  :ensure t)
+  :after (treemacs projectile))
 
 ;; Projectile add main projects you are working on at the moment
-(projectile-add-known-project "~/Teaching/Capstone_2023/lab_report_marking/lab_reports/")
+;(projectile-add-known-project "~/Teaching/Capstone_2023/lab_report_marking/lab_reports/")
 (projectile-add-known-project "~/PhD/WRITING/")
 (projectile-add-known-project "~/Logseq/journals/") ; location of logseq files and org mode agenda files
 (projectile-add-known-project "~/PhD/PROJECTS/")
@@ -75,7 +73,7 @@
 (use-package vertico
   :init
   (vertico-mode)
-  )
+)
 
 (add-hook 'window-setup-hook #'treemacs 'append)
 (require 'nerd-icons)
@@ -91,7 +89,7 @@
 ;load "~/.config/doom/org_bullets.el")
 ;(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 
- ; Org babel for R coding
+; Org babel for R coding
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((R . t)))
@@ -123,37 +121,32 @@
   (global-hide-mode-line-mode 1))
 
 (use-package doom-themes
-  :ensure t 
+  :ensure t
   :config
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
         doom-themes-enable-italic t) ; if nil, italics is universally disabled
-  (load-theme 'doom-nano-light)
+  (load-theme 'doom-nova) ; tealy dark blue background and easy to read
   ;; Enable flashing mode-line on errors
   (doom-themes-visual-bell-config)
   ;; Enable custom neotree theme (all-the-icons must be installed!)
   (doom-themes-neotree-config)
   ;; or for treemacs users
-  (setq doom-themes-treemacs-theme "doom-atom") ; use "doom-colors" for less minimal icon theme
+  (setq doom-themes-treemacs-theme "doom-nova") ; use "doom-colors" for less minimal icon theme
   (doom-themes-treemacs-config)
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
-
 
 (add-to-list 'load-path "~/.config/doom/packages/doom-nano-testing-main/load-nano.el")
 
 (load "~/.config/doom/setup_org_agenda.el")
 (load "~/.config/doom/setup_latex_workflow.el")
+(load "~/.config/doom/setup_ox_latex_classes.el")
 (load "~/.config/doom/setup_dashboard.el")
 (load "~/.config/doom/setup_ess.el")
 (load "~/.config/doom/setup_elfeed.el")
 (load "~/.config/doom/setup_markdown.el") ; this includes quarto mode
-;(load "~/.config/doom/setup_org_gcal.el")
-
-;(load "~/.config/doom/packages/svg-tag-mode/svg-tag-mode.el")
-;(load "~/.config/doom/packages/nano-theme/nano-theme.el")
-;(load "~/.config/doom/packages/book-mode/book-mode.el")
-;(load "~/.config/doom/packages/book-mode/book-mode-npr-settings.el")
+;(load "~/.config/doom/setup_org_roam.el")
 
 
 ;; Add an org mode template for thesis writing using yassnippet
@@ -164,13 +157,18 @@
   (setq yas-snippet-dirs '("~/.config/doom/yas-snippets"))
   (yas-global-mode 1))
 
+; Remove preamble at start of document in org to latex
+(setq org-latex-with-hyperref nil)
+
+
 ; run this everytime emacs starts up to get calendar events
 ;(call-process "/bin/bash" "~/.config/doom/calendar/get_ics_email")
 
 ; Create function to get calendar updating working
 ; This function runs get_ics_mail which is an executable script that imports my gmail calendar
 ; It then writes this to an ics file which is converted to an org file by ics2org which I have installed
-; using the terminal.
+; using the terminal. The ics2org package can be installed via npm see here:
+; https://github.com/theophilusx/icsorg
 ; This can also be done manually using the terminal  and it has a shortcut in the bash profile of
 ; my mac
 (defun my/get_cal()
@@ -183,35 +181,3 @@
 
 ; Run the functionmy/get_cal ; can also use M-x get_cal as well
 (my/get_cal)
-
-;; Whenever you reconfigure a package, make sure to wrap your config in an
-;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
-;;
-;;   (after! PACKAGE
-;;     (setq x y))
-;;
-;; The exceptions to this rule:
-;;
-;;   - Setting file/directory variables (like `org-directory')
-;;   - Setting variables which explicitly tell you to set them before their
-;;     package is loaded (see 'C-h v VARIABLE' to look up their documentation).
-;;   - Setting doom variables (which start with 'doom-' or '+').
-;;
-;; Here are some additional functions/macros that will help you configure Doom.
-;;
-;; - `load!' for loading external *.el files relative to this one
-;; - `use-package!' for configuring packages
-;; - `after!' for running code after a package has loaded
-;; - `add-load-path!' for adding directories to the `load-path', relative to
-;;   this file. Emacs searches the `load-path' when you load packages with
-;;   `require' or `use-package'.
-;; - `map!' for binding new keys
-;;
-;; To get information about any of these functions/macros, move the cursor over
-;; the highlighted symbol at press 'K' (non-evil users must press 'C-c c k').
-;; This will open documentation for it, including demos of how they are used.
-;; Alternatively, use `C-h o' to look up a symbol (functions, variables, faces,
-;; etc).
-;;
-;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
-;; they are implemented.

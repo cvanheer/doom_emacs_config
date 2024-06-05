@@ -1,15 +1,17 @@
 
-* Paper details
+- tags ::
+- keywords :: %^{keywords}
 
-📚 title: {title}
- 👥 author(s): { author}
- 📆 year :  {year}
- 🌏 doi: {doi}
- 📝 tags:
- 📜 journal: {journal}
+* %^{title}
+:PROPERTIES:
+:Custom_ID: %^{citekey}
+:URL: %^{url}
+:AUTHOR: %^{author-or-editor}
+:NOTER_DOCUMENT: %^{file}  ; <== special file keyword: if more than one filename
+:NOTER_PAGE:               ;     is available, the user will be prompted to choose
+:END:
 
-
-* TODO 🔄 Process:
+* Paper outline
 
 ** TODO What is the author trying to say?
 

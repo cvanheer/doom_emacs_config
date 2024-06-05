@@ -19,5 +19,5 @@
   (dashboard-week-agenda t)
   (dashboard-center-content t)
   (dashboard-set-file-icons t)
-  (dashboard-startup-banner "~/.config/doom/this_is_fine.gif")
+  (dashboard-startup-banner "~/.config/doom/this_is_fine.png")
   :config (dashboard-setup-startup-hook))

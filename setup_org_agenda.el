@@ -15,12 +15,18 @@
       org-agenda-include-deadlines t
       org-agenda-block-separator t
       org-agenda-compact-blocks t
-      ;org-agenda-remove-tags t
+      org-agenda-remove-tags t
       ;org-agenda-prefix-format "   %i"
       org-agenda-start-day nil ;; i.e. today
       org-agenda-start-on-weekday nil
       org-support-shift-select t
-      org-agenda-span 7
+
+      ; When to start the agends
+      org-agenda-start-day "-1d"
+      org-agenda-span 14
+      org-agenda-start-on-weekday nil
+      org-agenda-include-diary t
+
       org-agenda-start-with-log-mode t
       org-agenda-dim-blocked-tasks nil
       org-agenda-compact-blocks t
@@ -53,8 +59,6 @@
                                     "DOING(p)"
                                     "MEETING(me)" "|" "DONE(d)")
               (sequence "WAITING(w)" "|" "PHONE"))))) ; "CANCELLED(c)"
-
-
 
 ;; This adds a variable so you can have global tags in org-mode for GTD
 (after! org (setq org-tag-list '(("@work" . ?w) ("@home" . ?h) ("@PhD" . ?l)  ("@computer" . ?l))))
@@ -200,15 +204,17 @@
   )
 
 
-
 (after! org
 (customize-set-value
  'org-agenda-category-icon-alist
  `(
+   ("Life admin" "~/.config/icons/plant.svg" nil nil :ascent center :mask heuristic :height 20)
+   ("Schedule" "~/.config/icons/calendar.svg" nil nil :ascent center :mask heuristic :height 20)
    ("Late marking" "~/.config/icons/fire.svg" nil nil :ascent center :mask heuristic :height 20)
    ("Teaching" "~/.config/icons/pencil.svg" nil nil :ascent center :mask heuristic :height 20)
-   ("Consulting" "~/.config/icons/rocket.svg" nil nil :ascent center :mask heuristic :height 25)
-   ("PhD" "~/.config/icons/tree.svg" nil nil :ascent center :mask heuristic :height 30)
+   ("Consulting" "~/.config/icons/tree.svg" nil nil :ascent center :mask heuristic :height 25)
+   ("PhD diary" "~/.config/icons/grow.svg" nil nil :ascent center :mask heuristic :height 30)
+   ("PhD" "~/.config/icons/rocket.svg" nil nil :ascent center :mask heuristic :height 30)
    )))
 
 ; http://doc.endlessparentheses.com/Var/org-agenda-prefix-format.html
