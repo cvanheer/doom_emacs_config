@@ -52,11 +52,12 @@
 (package! dashboard)
 (package! pdf-tools)
 (package! treemacs-projectile)
-(package! citar)
 (package! centaur-tabs)
 (package! theme-changer)
 (package! marginalia)
 
+; Latex and bibtex
+(package! citar)
 (package! bibtex-completion)
 (package! helm-bibtex)
 (package! latex-preview-pane)
@@ -67,10 +68,15 @@
 (package! all-the-icons)
 (package! nerd-icons)
 
-; Org roam bibtex
+; Org roam related packages
 (package! org-roam)
 (package! org-roam-bibtex
   :recipe (:host github :repo "org-roam/org-roam-bibtex"))
+(package! org-noter
+  :recipe (:host github :repo "org-noter/org-noter"))
+(package! org-pdftools)
+(package! org-noter-pdftools)
+
 
 (package! cdlatex)
 (package! citar)

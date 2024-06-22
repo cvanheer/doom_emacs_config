@@ -43,6 +43,7 @@
 (setq display-line-numbers-type t)
 
 
+
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 ;(setq org-directory "~/org/"
@@ -50,11 +51,15 @@
 ; Disable projectile tracking projects so you can add them manually using the known project function
 (setq projectile-track-known-projects-automatically nil)
 
-(setq doom-font (font-spec :family "Ubuntu Mono" :size 12)
-      doom-variable-pitch-font (font-spec :family "Ubuntu Mono" :size 12))
+(setq doom-font (font-spec :family "Ubuntu Mono" :size 13)
+      doom-variable-pitch-font (font-spec :family "Ubuntu Mono" :size 13))
 
+; ------ TREEMACS ------
+; Not in use at the moment because it is annoying me
 (use-package treemacs-projectile
   :after (treemacs projectile))
+;(add-hook 'window-setup-hook #'treemacs 'append)
+
 
 ;; Projectile add main projects you are working on at the moment
 ;(projectile-add-known-project "~/Teaching/Capstone_2023/lab_report_marking/lab_reports/")
@@ -75,7 +80,6 @@
   (vertico-mode)
 )
 
-(add-hook 'window-setup-hook #'treemacs 'append)
 (require 'nerd-icons)
 
 ;(setenv "PATH" (concat "/usr/texbin:/usr/local/bin:" (getenv "PATH")))
@@ -132,8 +136,7 @@
   ;; Enable custom neotree theme (all-the-icons must be installed!)
   (doom-themes-neotree-config)
   ;; or for treemacs users
-  (setq doom-themes-treemacs-theme "doom-nova") ; use "doom-colors" for less minimal icon theme
-  (doom-themes-treemacs-config)
+  ;(doom-themes-treemacs-config)
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
 
@@ -146,7 +149,8 @@
 (load "~/.config/doom/setup_ess.el")
 (load "~/.config/doom/setup_elfeed.el")
 (load "~/.config/doom/setup_markdown.el") ; this includes quarto mode
-;(load "~/.config/doom/setup_org_roam.el")
+                                        ;
+(setq max-lisp-eval-depth 160000)
 
 
 ;; Add an org mode template for thesis writing using yassnippet
@@ -175,7 +179,8 @@
   "An interactive function which runs scripts to get my gmail calendar to sync to my org agenda"
 (interactive) ; allows you to use M-x
 (shell-command "sh ~/.config/doom/calendar/get_ics_email")
-(shell-command  "icsorg"))
+(shell-command  "icsorg")
+)
 
 ;(global-set-key (kbd "C-c c") "my/get_cal")
 

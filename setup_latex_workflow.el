@@ -1,12 +1,12 @@
-; latex_workflow.el
+; setup_latex_workflow.el
 
 ; -----------------------------------------------------------
 ;                       REFERENCING
 ; -----------------------------------------------------------
 ; Bib files which have all of my references
-(setq my/bib_files '("~/PhD/BIBTEX/PhD_betterbiblatex.bib"
-                     "~/PhD/BIBTEX/PhD_betterbibtex.bib"))
-                     ;"~/WORK/Consulting/SCYC/BIBTEX/SCYC_betterbiblatex.bib"))
+(setq my/bib_files '("~/PhD/BIBTEX/PhD_betterbibtex.bib"
+                     "~/WORK/Consulting/SCYC/BIBTEX/SCYC_betterbiblatex.bib"))
+                     ;"~/PhD/BIBTEX/PhD_betterbiblatex.bib"
 
 ; Org cite is the inbuilt ref management in emacs
 (after! oc
@@ -28,19 +28,16 @@
   (org-cite-follow-processor 'citar)
   (org-cite-activate-processor 'citar)
   (citar-file-note-extensions (list "org"))
-  (citar-library-file-extensions (list "pdf" "jpg")
-      citar-file-additional-files-separator "-")
+  (citar-library-file-extensions (list "pdf" "jpg"))
   (citar-notes-paths '("~/org/notes/refs/PhD/"))
-  ;; (citar-templates
-  ;;     '((main . "${author editor:30%sn}     ${date year issued:4}     ${title:48}")
-  ;;       (suffix . "          ${=key= id:15}    ${=type=:12}    ${tags keywords:*}")
-  ;;       (preview . "${author editor:%etal} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
-  ;;       (note . "Notes on ${author editor:%etal}, ${title}")))
   :hook
   (LaTeX-mode . citar-capf-setup)
   (org-mode . citar-capf-setup)
   :bind  (("C-c b" . citar-insert-citation)) ; this is the shortcut key for inserting citation
 )
+
+(after! citar
+  (add-to-list 'citar-file-open-functions '("pdf" . citar-file-open)))
 
 ; -----------------------------------------------------------
 ;                     CITAR EMBARK
@@ -75,106 +72,128 @@
    (require 'org-roam-protocol)
 )
 
-
-
-
-(defadvice! riccardo/citar-file-trust-zotero (oldfun &rest r)
-  "Leave Zotero-generated file paths alone, especially zotero://..."
-  :around '(citar-file-open citar-file--find-files-in-dirs)
-  (cl-letf (((symbol-function 'file-exists-p) #'always)
-            ((symbol-function 'expand-file-name) (lambda (first &rest _) first)))
-    (apply oldfun r)))
-
-(after! citar
-  (add-to-list 'citar-file-open-functions '("pdf" . citar-file-open-external)))
+; -- Misc optional configurations
+;Writing technical documents requires us to write in paragraphs, whereas org mode by default is intended to be used as an outliner,
+;to get around this problem, setting up org-export to preserve line breaks is useful, there are two ways to achieve this,
+;we can add \n:t to #+options: as a document specific setting, or we can set
+(setq org-export-preserve-breaks t)
 
 ; -----------------------------------------------------------
-;                      ORG ROAM BIBTEX
+;                    ORG ROAM BIBTEX
 ; -----------------------------------------------------------
+; If you need more advice on template files have a look here:
+; https://github.com/org-roam/org-roam-bibtex/issues/178
+
 (use-package org-roam-bibtex
   :after org-roam
   :hook (org-roam-mode . org-roam-bibtex-mode)
   :config
   (setq orb-preformat-keywords
-      '("citekey" "title" "url" "author-or-editor" "keywords" "file" "date")
-      orb-process-file-keyword t
-      orb-attached-file-extensions '("pdf")))
+        '("citekey" "title" "url" "author" "keywords" "file" "date")
+     ; orb-process-file-keyword "p"
+      orb-attached-file-extensions '("pdf"))) ; only us pdf in file
 (org-roam-bibtex-mode)
 
-(setq org-roam-node-display-template
-      (concat "${type:15} ${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
 
-(setq orb-preformat-keywords
-      '("citekey" "title" "url" "author-or-editor" "keywords" "file")
-      orb-process-file-keyword t
-      orb-attached-file-extensions '("pdf"))
+; -----------------------------------------------------------
+;                      ORG NOTER
+; -----------------------------------------------------------
+; https://github.com/emacs-citar/citar/wiki/Notes-configuration
+; To begin using org-noter you place your cursor next to the NOTER_DOCUMENT property in org-noter and then
+(use-package org-noter
+  :config
+  (setq org-noter-notes-search-path '("/Users/chris/org/notes/refs/PhD/"))) ; path to citar-org-roam-subdir
+(pdf-loader-install)
+;(org-noter-enable-org-roam-integration)
 
-(after! org-roam-bibtex
-(setq org-roam-capture-templates
-      '(
-        ;; PhD literature review
-        ("p" "PhD LR" plain
-         (file "/Users/chris/.config/doom/org-templates/PhD_literature_review.org")
-         :target
-         (file+head "~/org/notes/refs/PhD/${citar-citekey}.org" "#+title:${title}\n#+ROAM_KEY:${citar-citekey}\n#+filetags::PhD:"))
+; If you highlight text this will put highlighted text in the .org roam file you are taking notes in
+(setq org-noter-highlight-selected-text t)
 
-         ;; Biblipgraphy referennce
-        ("r" "bibliography reference" plain "%?"
-        :target
-        (file+head "~/org/notes/refs/PhD/${citekey}.org" "#+title:${title}\n")
-        :unnarrowed t))
-        )
-(setq orb-preformat-keywords
-      '("citekey" "title" "url" "author-or-editor" "keywords" "file")
-      orb-process-file-keyword t
-      orb-attached-file-extensions '("pdf"))
-)
-
+; -----------------------------------------------------------
+;                     CITAR ORG ROAM
+; -----------------------------------------------------------
+; HOW TO CONFIGURE NOTES: https://github.com/emacs-citar/citar/wiki/Notes-configuration
 (use-package citar-org-roam
   :after (citar org-roam)
-  :config (citar-org-roam-mode)
-)
+  :config
+  (citar-org-roam-mode))
+(setq citar-org-roam-capture-template-key "c")
 
-;(setq citar-org-roam-note-title-template "${citekey}")
-(setq citar-org-roam-capture-template-key "p")
+(setq citar-org-roam-template-fields
+        '((:citar-citekey "key")
+          (:citar-title "title")
+          (:citar-file "file")
+          (:citar-author "author" "editor")
+          (:citar-date "date" "year" "issued")
+          (:citar-pages "pages")
+          (:citar-type "=type="))   )
+
+(defun citar-add-org-noter-document-property(key &optional entry)
+  "Set various properties PROPERTIES drawer when new Citar note is created."
+  (interactive)
+  (let* ((file-list-temp (list (citar--select-resource key :files t)))
+         (file-path-temp (alist-get 'file file-list-temp))
+         (cite-file (cdr (citar-get-field-with-value'(file) key)))
+         (cite-author (cdr (citar-get-field-with-value'(author) key)))
+         (cite-url (cdr (citar-get-field-with-value '(url) key))) )
+    (org-set-property "NOTER_DOCUMENT" file-path-temp)
+    (org-set-property "PAPER" cite-file) ; can also use org-insert-link but will insert down botton of page
+    (org-set-property "Custom_ID" key)
+    (org-set-property "AUTHOR" cite-author)
+    (org-set-property "URL"    cite-url)
+    (org-roam-ref-add (concat "@" key))
+    (org-id-get-create)))
+
+(advice-add 'citar-create-note :after #'citar-add-org-noter-document-property)
+
+(add-to-list 'org-roam-capture-templates
+     '("c" "citar literature note" plain (file "/Users/chris/.config/doom/org-templates/PhD_literature_review.org") ; OR "%?" instead of (file path_to_template)
+       :target (file+head "%(expand-file-name org-roam-directory)/${citar-citekey}.org"
+                              "#+title: Notes on: ${citar-title}\n#+subtitle: ${citar-author}, ${citar-date}")
+       :unnarrowed t))
+
+(setq citar-org-roam-capture-template-key "c")
 
 ; CITAR DISPLAY CONFIGURATION
 ; See: https://github.com/emacs-citar/citar/wiki/Indicators
-    (defvar citar-indicator-files-icons
-      (citar-indicator-create
-       :symbol (nerd-icons-faicon
-                "nf-fa-file_o"
-                :face 'nerd-icons-green
-                :v-adjust -0.1)
-       :function #'citar-has-files
-       :padding "  " ; need this because the default padding is too low for these icons
-       :tag "has:files"))
-    (defvar citar-indicator-links-icons
-      (citar-indicator-create
-       :symbol (nerd-icons-faicon
-                "nf-fa-link"
-                :face 'nerd-icons-orange
-                :v-adjust 0.01)
-       :function #'citar-has-links
-       :padding "  "
-       :tag "has:links"))
-    (defvar citar-indicator-notes-icons
-      (citar-indicator-create
-       :symbol (nerd-icons-codicon
-                "nf-cod-note"
-                :face 'nerd-icons-blue
-                :v-adjust -0.3)
-       :function #'citar-has-notes
-       :padding "    "
-       :tag "has:notes"))
-    (defvar citar-indicator-cited-icons
-      (citar-indicator-create
-       :symbol (nerd-icons-faicon
-                "nf-fa-circle_o"
-                :face 'nerd-icon-green)
-       :function #'citar-is-cited
-       :padding "  "
-       :tag "is:cited"))
+(defvar citar-indicator-files-icons
+  (citar-indicator-create
+   :symbol (all-the-icons-faicon
+            "file-o"
+            :face 'all-the-icons-green
+            :v-adjust -0.1)
+   :function #'citar-has-files
+   :padding "  " ; need this because the default padding is too low for these icons
+   :tag "has:files"))
+
+(defvar citar-indicator-links-icons
+  (citar-indicator-create
+   :symbol (all-the-icons-octicon
+            "link"
+            :face 'all-the-icons-orange
+            :v-adjust 0.01)
+   :function #'citar-has-links
+   :padding "  "
+   :tag "has:links"))
+
+(defvar citar-indicator-notes-icons
+  (citar-indicator-create
+   :symbol (all-the-icons-material
+            "speaker_notes"
+            :face 'all-the-icons-blue
+            :v-adjust -0.3)
+   :function #'citar-has-notes
+   :padding "  "
+   :tag "has:notes"))
+
+(defvar citar-indicator-cited-icons
+  (citar-indicator-create
+   :symbol (all-the-icons-faicon
+            "circle-o"
+            :face 'all-the-icon-green)
+   :function #'citar-is-cited
+   :padding "  "
+   :tag "is:cited"))
 
 (setq citar-indicators
   (list citar-indicator-files-icons
@@ -230,8 +249,7 @@ to IT for use in the THEN and ELSE clauses"
 )
 
 ;(setq TeX-global-PDF-mode t)
-(setq org-latex-pdf-process (list
-                             "latexmk -pdflatex='lualatex -shell-escape -interaction nonstopmode' -pdf -f  %f"))
+(setq org-latex-pdf-process (list "latexmk -pdflatex='lualatex -shell-escape -interaction nonstopmode' -pdf -f  %f"))
 
 ; -----------------------------------------------------------
 ;                      DEFT
@@ -245,5 +263,3 @@ to IT for use in the THEN and ELSE clauses"
         deft-use-filename-as-title t)
   :bind
   ("C-c n d" . deft))
-
-

@@ -5,8 +5,9 @@
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
    '("00cec71d41047ebabeb310a325c365d5bc4b7fab0a681a2a108d32fb161b4006" default))
+ '(magit-todos-insert-after '(bottom) nil nil "Changed by setter of obsolete option `magit-todos-insert-at'")
  '(package-selected-packages
-   '(doom-themes yasnippet ts transient quarto-mode ob-latex-as-png cdlatex auctex-latexmk)))
+   '(yasnippet ts transient quarto-mode pdf-tools ob-latex-as-png doom-themes cdlatex auctex-latexmk)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
