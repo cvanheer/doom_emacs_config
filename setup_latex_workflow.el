@@ -1,5 +1,11 @@
 ; setup_latex_workflow.el
-
+; This is my workflow for academia in emacs. The idea here is that I have my emacs setup for the following:
+; 1. Writing papers in latex and org-mode. I have setup some .tex templates from classic thesis which is used in org-mode but I can also use the same templates in latex by opening a new template document.
+; 2. Citations are done using citar - I prefer this package as it's more modern, but it's harder to link to things like org-roam (note taking) and org-noter (annotating pdfs)
+; This workflow uses marginalia for useful notes about stuff in the margins, and vertico and embark for completion - these are again, more modern than helm/ivy etc but they require a bit more research in terms of getting the right configuration.
+; PDFs - I have stored my PDFs in Zotero but after import I use something to get the PDFs renamed according to their citekey and then stored in ~/PhD/BIBTEX/{citekey}/{citekey.pdf}. org-noter links to the papers by having a property called :NOTER_DOCUMENT: which links to the pdf - so putting your cursor next to that and typing "org_noter" will bring up a note
+;
+;
 ; -----------------------------------------------------------
 ;                       REFERENCING
 ; -----------------------------------------------------------
@@ -254,12 +260,23 @@ to IT for use in the THEN and ELSE clauses"
 ; -----------------------------------------------------------
 ;                      DEFT
 ; -----------------------------------------------------------
+; Deft is a package which allows for nice viewing of all of your org-roam notes
+; and it's a search engine of sorts
 (use-package deft
   :config
   (setq deft-extensions '("org")
         deft-directory org-roam-directory
         deft-recursive t
-        deft-strip-summary-regexp ":PROPERTIES:\n\\(.+\n\\)+:END:\n"
+        ;deft-strip-summary-regexp ":PROPERTIES:\n\\(.+\n\\)+:END:\n"
+        ; this controls what we see in the index for deft so that we don't see the title of the note as
+        ; it is fully described by the filename which is the citekey
+        deft-strip-summary-regexp
+        (concat "\\("
+	  "^:.+:.*\n" ; any line with a :SOMETHING:
+	  "\\|^#\\+.*\n" ; anyline starting with a #+
+	  "\\|^\\*.+.*\n" ; anyline where an asterisk starts the line
+	  "\\)")
         deft-use-filename-as-title t)
   :bind
   ("C-c n d" . deft))
+
