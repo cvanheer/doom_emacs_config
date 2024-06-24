@@ -5,7 +5,8 @@
 ; This workflow uses marginalia for useful notes about stuff in the margins, and vertico and embark for completion - these are again, more modern than helm/ivy etc but they require a bit more research in terms of getting the right configuration.
 ; PDFs - I have stored my PDFs in Zotero but after import I use something to get the PDFs renamed according to their citekey and then stored in ~/PhD/BIBTEX/{citekey}/{citekey.pdf}. org-noter links to the papers by having a property called :NOTER_DOCUMENT: which links to the pdf - so putting your cursor next to that and typing "org_noter" will bring up a note
 ;
-;
+; Remove preamble at start of document in org to latex
+(setq org-latex-with-hyperref nil)
 ; -----------------------------------------------------------
 ;                       REFERENCING
 ; -----------------------------------------------------------
@@ -78,6 +79,8 @@
    (require 'org-roam-protocol)
 )
 
+
+
 ; -- Misc optional configurations
 ;Writing technical documents requires us to write in paragraphs, whereas org mode by default is intended to be used as an outliner,
 ;to get around this problem, setting up org-export to preserve line breaks is useful, there are two ways to achieve this,
@@ -99,7 +102,6 @@
      ; orb-process-file-keyword "p"
       orb-attached-file-extensions '("pdf"))) ; only us pdf in file
 (org-roam-bibtex-mode)
-
 
 ; -----------------------------------------------------------
 ;                      ORG NOTER
@@ -125,6 +127,9 @@
   (citar-org-roam-mode))
 (setq citar-org-roam-capture-template-key "c")
 
+; This allows pre-filling of some of the fields taking them from citar and giving them citar-field as a name
+; so then we can use them in the org-roam note as :PROPERTY: drawers which are useful for later
+
 (setq citar-org-roam-template-fields
         '((:citar-citekey "key")
           (:citar-title "title")
@@ -133,6 +138,10 @@
           (:citar-date "date" "year" "issued")
           (:citar-pages "pages")
           (:citar-type "=type="))   )
+
+; This is to unfold the property drawer
+(setq org-hide-block-startup nil
+      org-startup-folded "fold")
 
 (defun citar-add-org-noter-document-property(key &optional entry)
   "Set various properties PROPERTIES drawer when new Citar note is created."
@@ -155,7 +164,7 @@
 (add-to-list 'org-roam-capture-templates
      '("c" "citar literature note" plain (file "/Users/chris/.config/doom/org-templates/PhD_literature_review.org") ; OR "%?" instead of (file path_to_template)
        :target (file+head "%(expand-file-name org-roam-directory)/${citar-citekey}.org"
-                              "#+title: Notes on: ${citar-title}\n#+subtitle: ${citar-author}, ${citar-date}")
+                              "#+title: Notes on: ${citar-title}\n#+subtitle: ${citar-author}, ${citar-date}\n#+ROAM_TAGS: :PhD:")
        :unnarrowed t))
 
 (setq citar-org-roam-capture-template-key "c")
@@ -280,3 +289,15 @@ to IT for use in the THEN and ELSE clauses"
   :bind
   ("C-c n d" . deft))
 
+; https://github.com/jrblevin/deft/issues/75
+(advice-add 'deft-parse-title :override
+    (lambda (file contents)
+      (if deft-use-filename-as-title
+	  (deft-base-filename file)
+	(let* ((case-fold-search 't)
+	       (begin (string-match "title: " contents))
+	       (end-of-begin (match-end 0))
+	       (end (string-match "\n" contents begin)))
+	  (if begin
+	      (substring contents end-of-begin end)
+	    (format "%s" file))))))
