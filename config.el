@@ -56,7 +56,7 @@
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
         doom-themes-enable-italic t) ; if nil, italics is universally disabled
-  (load-theme 'doom-oceanic-next t)
+  (load-theme 'base16-gruvbox-dark-pale t)
   ;; Enable flashing mode-line on errors
   (doom-themes-visual-bell-config)
   ;; Enable custom neotree theme (all-the-icons must be installed!)
@@ -66,6 +66,14 @@
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
 
+
+; ------------------------------------------------------------------
+; TRANSPARENT SCREEN - https://kristofferbalintona.me/posts/202206071000/
+; ------------------------------------------------------------------
+(set-frame-parameter (selected-frame) 'alpha 75) ; (active opacity when selected, inactive)
+(set-frame-parameter (selected-frame) 'alpha-background 98) ; (active opacity when selected, inactive                                        ;
+(add-to-list 'default-frame-alist '(alpha . 75))
+(add-to-list 'default-frame-alist '(alpha-background 98))
 
 ; ------------------------------------------------------------------
 ; TEXT / LINE WRAPPING
@@ -87,8 +95,8 @@
 ;(setq org-directory "~/org/"
 
 
-(setq doom-font (font-spec :family "Ubuntu Mono" :size 13)
-      doom-variable-pitch-font (font-spec :family "Ubuntu Mono" :size 13))
+(setq doom-font (font-spec :family "Inconsolata" :size 14 :weight 'regular)
+      doom-variable-pitch-font (font-spec :family "Inconsolata" :size 14 :weight 'regular))
 
 ; ------------------------------------------------------------------
 ; TREEMACS & PROJECTILE - manages projects
@@ -145,6 +153,20 @@
   :demand
   :config
   (centaur-tabs-mode t)
+  (setq centaur-tabs-set-icons t) ; To display themed icons from all the icons
+  (setq centaur-tabs-height 20)
+  ; Underline for the tab you are on at the moment
+  (setq centaur-tabs-set-bar 'under)
+  ;; Note: If you're not using Spacmeacs, in order for the underline to display
+  ;; correctly you must add the following line:
+  (setq x-underline-at-descent-line t)
+  (setq centaur-tabs-close-button "X") ; string for close button
+  (setq centaur-tabs-gray-out-icons 'buffer) ; To gray out icons for the unselected tabs:
+  (setq centaur-tabs-set-bar 'left) ; coloured bar on left side
+  (setq centaur-tabs-set-modified-marker t)
+  (setq centaur-tabs-modified-marker "*")
+  ; Integrate projectile with
+  (centaur-tabs-group-by-projectile-project) ; you can call "(centaur-tabs-group-buffer-groups)" if you need to perforn this action
   :bind
   ("C-<prior>" . centaur-tabs-backward)
   ("C-<next>" . centaur-tabs-forward))
@@ -167,7 +189,17 @@
 (load "~/.config/doom/setup_org_agenda.el")
 (load "~/.config/doom/setup_latex_workflow.el")
 (load "~/.config/doom/setup_ox_latex_classes.el")
-(load "~/.config/doom/setup_dashboard.el")
+;(load "~/.config/doom/setup_dashboard.el")
 (load "~/.config/doom/setup_ess.el")
 (load "~/.config/doom/setup_elfeed.el")
 (load "~/.config/doom/setup_markdown.el") ; this includes quarto mod
+
+; ------------------------------------------------------------------
+; WHAT TO OPEN WHEN EMACS STARTS UP
+; ------------------------------------------------------------------
+; This is just a list of things to open when you start emacs every day
+(defun emacs-startup-screen ()
+  "Display the weekly org-agenda and all todos."
+  (org-agenda "a" "g"))
+(add-hook 'emacs-startup-hook #'emacs-startup-screen)
+(setq-default inhibit-startup-buffer-menu t)

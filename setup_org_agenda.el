@@ -57,7 +57,7 @@
 (after! org (setq org-todo-keywords
                   (quote ((sequence "PAPER EDITS(e)" "READ(r)" "TODO(t)" "URGENT(u)" "NEXT(n)"
                                     "DOING(p)"
-                                    "MEETING(me)" "|" "DONE(d)")
+                                    "MEETING(me)" "|" "DONE(d)" "DIARY(p)")
               (sequence "WAITING(w)" "|" "PHONE"))))) ; "CANCELLED(c)"
 
 ;; This adds a variable so you can have global tags in org-mode for GTD
@@ -90,6 +90,7 @@
               ("READ" :foreground "#ffad17" ) ; goldy
               ("MEETING" :foreground "#63cdb0")
               ("DONE" :foreground "#277e62" ) ; dark forest green
+              ("DIARY" :foreground "#3de397" ) ; seafoam green
               ("WAITING" :foreground "#ffc986" )
               ;("CANCELLED" :foreground "forest green" ) ;there are
               ("PHONE" :foreground "forest green" )))))

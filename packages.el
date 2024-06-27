@@ -67,6 +67,7 @@
 (package! deft)
 (package! all-the-icons)
 (package! nerd-icons)
+(package! base16-theme)
 
 ; Org roam related packages
 (package! org-roam)
@@ -90,7 +91,8 @@
 ; Elfeed for reading in RSS feeds
 (package! elfeed)
 (package! elfeed-org)
-(package! elfeed-score)
+;(package! elfeed-score)
+(package! elfeed-curate)
 (package! ess-view-data)
 (package! vertico)
 (package! flycheck)
@@ -102,6 +104,7 @@
 (package! markdown-mode)
 ;(package! quarto-mode)
 (package! request)
+
 
 (package! doom-nano-modeline
   :recipe (:host github
