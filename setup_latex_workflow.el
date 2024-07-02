@@ -129,7 +129,6 @@
 
 ; This allows pre-filling of some of the fields taking them from citar and giving them citar-field as a name
 ; so then we can use them in the org-roam note as :PROPERTY: drawers which are useful for later
-
 (setq citar-org-roam-template-fields
         '((:citar-citekey "key")
           (:citar-title "title")
@@ -169,8 +168,7 @@
 
 (setq citar-org-roam-capture-template-key "c")
 
-; CITAR DISPLAY CONFIGURATION
-; See: https://github.com/emacs-citar/citar/wiki/Indicators
+; CITAR DISPLAY CONFIGURATION See: https://github.com/emacs-citar/citar/wiki/Indicators
 (defvar citar-indicator-files-icons
   (citar-indicator-create
    :symbol (all-the-icons-faicon
@@ -244,6 +242,10 @@ to IT for use in the THEN and ELSE clauses"
 ; -----------------------------------------------------------
 ;                       LATEX
 ; -----------------------------------------------------------
+;(setq TeX-global-PDF-mode t)
+(setq org-latex-pdf-process (list "latexmk -pdflatex='lualatex -shell-escape -interaction nonstopmode' -pdf -f  %f"))
+(setq TeX-engine 'luatex)
+
 (use-package cdlatex)
 (use-package latex-preview-pane)
 (latex-preview-pane-enable)
@@ -260,11 +262,10 @@ to IT for use in the THEN and ELSE clauses"
 (use-package auctex
   :defer t ; will not try to load auctex when you start up - you have to do it for this
   ; this is becasue there is not a package named latex and gets loads with other stuff
-  :hook (LaTeX-mode . my/latex-mode-hook) ; mode funcion format
+  :hook (LaTeX-mode-hook . my/latex-mode-hook) ; mode funcion format
+  :config
+   (setq TeX-engine 'xetex)
 )
-
-;(setq TeX-global-PDF-mode t)
-(setq org-latex-pdf-process (list "latexmk -pdflatex='lualatex -shell-escape -interaction nonstopmode' -pdf -f  %f"))
 
 ; -----------------------------------------------------------
 ;                      DEFT

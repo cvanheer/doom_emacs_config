@@ -23,8 +23,8 @@
 ;;
 ;;
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
-;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
-;; refresh your font settings. If Emacs still can't find your font, it likely
+;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to fPtr
+;; refresh your font settings. If Emacs still can't find your font, it  fPtranlikely
 ;; wasn't installed correctly. Font issues are rarely Doom issues!
 
 
@@ -41,22 +41,18 @@
 ; `load-theme' function. This is the default:
 ;(setq doom-theme 'doom-earl-grey)
 
-;; Note: themes are stored in /Applications/Emacs.app/Contents/Resources/etc
-(add-to-list 'load-path "~/.config/doom/packages/doom-nano-modeline/")
-(add-to-list 'load-path "~/.config/doom/packages/doom-nano-testing/")
 
-(use-package! doom-nano-modeline
-  :config
-  (doom-nano-modeline-mode 1)
-  (global-hide-mode-line-mode 1))
+;; (use-package! doom-nano-modeline
+;;   :config
+;;   (doom-nano-modeline-mode 1)
+;;   (global-hide-mode-line-mode 1))
 
 (use-package doom-themes
-  :ensure t
   :config
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
         doom-themes-enable-italic t) ; if nil, italics is universally disabled
-  (load-theme 'base16-gruvbox-dark-pale t)
+  (load-theme 'doom-pine t)
   ;; Enable flashing mode-line on errors
   (doom-themes-visual-bell-config)
   ;; Enable custom neotree theme (all-the-icons must be installed!)
@@ -65,15 +61,42 @@
   ;(doom-themes-treemacs-config)
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
+(customize-set-variable 'doom-themes-treemacs-theme "doom-colors")
 
 
+; Make comments more visible in foom-pine
+(custom-set-faces!
+  '(font-lock-comment-face :foreground "#d3d3d3"))
+
+
+;; Note: themes are stored in /Applications/Emacs.app/Contents/Resources/etc
+(add-to-list 'load-path "~/.config/doom/packages/doom-nano-modeline/")
+(add-to-list 'load-path "~/.config/doom/packages/doom-nano-testing/")
 ; ------------------------------------------------------------------
 ; TRANSPARENT SCREEN - https://kristofferbalintona.me/posts/202206071000/
 ; ------------------------------------------------------------------
-(set-frame-parameter (selected-frame) 'alpha 75) ; (active opacity when selected, inactive)
-(set-frame-parameter (selected-frame) 'alpha-background 98) ; (active opacity when selected, inactive                                        ;
+(set-frame-parameter (selected-frame) 'alpha 75) ;
+(set-frame-parameter (selected-frame) 'alpha-background 100)   ;
 (add-to-list 'default-frame-alist '(alpha . 75))
-(add-to-list 'default-frame-alist '(alpha-background 98))
+(add-to-list 'default-frame-alist '(alpha-background . 100))
+
+; This function needs a bit of work - does not toggle in a loop
+(defun my/toggle-transparency ()
+   (interactive)
+   (let ((alpha (frame-parameter nil 'alpha)))
+     (set-frame-parameter
+      nil 'alpha
+      (if (eql (cond ((numberp alpha) alpha)
+                     ((numberp (cdr alpha)) (cdr alpha))
+                     ;; Also handle undocumented (<active> <inactive>) form.
+                     ((numberp (cadr alpha)) (cadr alpha)))
+               100)
+          '(100. 75) '(100 . 100)
+          )
+      )
+     )
+   )
+ (global-set-key (kbd "C-c t") 'my/toggle-transparency)
 
 ; ------------------------------------------------------------------
 ; TEXT / LINE WRAPPING
@@ -89,23 +112,45 @@
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type t)
 
-
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 ;(setq org-directory "~/org/"
 
-
-(setq doom-font (font-spec :family "Inconsolata" :size 14 :weight 'regular)
-      doom-variable-pitch-font (font-spec :family "Inconsolata" :size 14 :weight 'regular))
+; Other fonts I like if you wanna spice things up:
+; - JetBrains Mono
+; - Isoveska
+(setq doom-font (font-spec :family "Ubuntu Mono" :size 12)
+      doom-variable-pitch-font (font-spec :family "Ubuntu Mono" :size 12))
 
 ; ------------------------------------------------------------------
 ; TREEMACS & PROJECTILE - manages projects
 ; ------------------------------------------------------------------
+(customize-set-variable 'doom-themes-treemacs-theme "doom-colors")
+
+(use-package treemacs
+  :defer t
+  :init
+  (with-eval-after-load 'winum
+    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
+  :config
+  (setq treemacs-width 70))
+
 ; Not in use at the moment because it is annoying me
-(use-package treemacs-projectile
-  :after (treemacs projectile))
+;(use-package treemacs-projectile
+  ;:after (treemacs projectile))
 ;(add-hook 'window-setup-hook #'treemacs 'append)
-;
+
+(use-package treemacs-icons-dired
+  :hook (dired-mode . treemacs-icons-dired-enable-once))
+
+(use-package treemacs-magit
+  :after (treemacs magit))
+
+(use-package treemacs-nerd-icons
+  :after treemacs
+  :config
+  (treemacs-load-theme "nerd-icons"))
+
 ; Disable projectile tracking projects so you can add them manually using the known project function
 (setq projectile-track-known-projects-automatically nil)
 
@@ -136,6 +181,13 @@
 (require 'nerd-icons)
 (add-to-list 'load-path "/Applications/Emacs.app/Contents/Resources/site-lisp")
 
+; Expand and contract paragraphs
+(use-package! unfill
+  :defer t
+  :bind
+  ("M-q" . unfill-toggle)
+  ("A-q" . unfill-paragraph))
+
 ; ------------------------------------------------------------------
 ; ORG-BABEL
 ; ------------------------------------------------------------------
@@ -160,7 +212,7 @@
   ;; Note: If you're not using Spacmeacs, in order for the underline to display
   ;; correctly you must add the following line:
   (setq x-underline-at-descent-line t)
-  (setq centaur-tabs-close-button "X") ; string for close button
+  (setq centaur-tabs-close-button "x") ; string for close button
   (setq centaur-tabs-gray-out-icons 'buffer) ; To gray out icons for the unselected tabs:
   (setq centaur-tabs-set-bar 'left) ; coloured bar on left side
   (setq centaur-tabs-set-modified-marker t)
@@ -185,14 +237,14 @@
 ; ------------------------------------------------------------------
 ; EMACS SETUP
 ; ------------------------------------------------------------------
-(load "~/.config/doom/setup_calendar.el") ; this includes quarto mod
+(load "~/.config/doom/setup_calendar.el")
 (load "~/.config/doom/setup_org_agenda.el")
 (load "~/.config/doom/setup_latex_workflow.el")
 (load "~/.config/doom/setup_ox_latex_classes.el")
 ;(load "~/.config/doom/setup_dashboard.el")
 (load "~/.config/doom/setup_ess.el")
 (load "~/.config/doom/setup_elfeed.el")
-(load "~/.config/doom/setup_markdown.el") ; this includes quarto mod
+(load "~/.config/doom/setup_markdown.el") ; this includes quarto mode
 
 ; ------------------------------------------------------------------
 ; WHAT TO OPEN WHEN EMACS STARTS UP
@@ -200,6 +252,12 @@
 ; This is just a list of things to open when you start emacs every day
 (defun emacs-startup-screen ()
   "Display the weekly org-agenda and all todos."
-  (org-agenda "a" "g"))
+  (org-agenda "a" "a"))
 (add-hook 'emacs-startup-hook #'emacs-startup-screen)
 (setq-default inhibit-startup-buffer-menu t)
+
+; ------------------------------------------------------------------
+; ESS - Emacs Speaks Statistics
+; Description: this is m
+; ------------------------------------------------------------------
+(define-key ess-mode-map (kbd "<C-return>") 'ess-eval-paragraph-and-step)

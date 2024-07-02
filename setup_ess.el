@@ -55,7 +55,7 @@
 
 ; Rstudio like setup in ESS - interactive function so you can call with M-x
 ; https://www.reddit.com/r/emacs/comments/15ggow0/i_need_some_help_with_my_rstudio_layout_for_ess/
-(defun my/rstudio-layout () ""
+(defun my-rstudio-layout () ""
        (interactive)
        (add-to-list 'display-buffer-alist
                     '((derived-mode . ess-mode)
@@ -95,7 +95,8 @@
                       (reusable-frames . nil)
                       (tab-group . "rstudio-2")))
 
-       (let ((ess-startup-directory 'default-directory))
+       (let ((ess-startup-directory 'default-directory)
+             (ess-ask-for-ess-directory nil))
          (delete-other-windows)
          (ess-switch-to-ESS t)
          (ess-rdired)

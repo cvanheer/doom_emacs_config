@@ -51,12 +51,16 @@
 (package! exec-path-from-shell)
 (package! dashboard)
 (package! pdf-tools)
+(package! treemacs-icons-dired)
+(package! treemacs-magit)
 (package! treemacs-projectile)
+(package! treemacs-nerd-icons)
 (package! centaur-tabs)
 (package! theme-changer)
 (package! marginalia)
 
 ; Latex and bibtex
+(package! unfill) ; expanding and contracting paragraphs
 (package! citar)
 (package! bibtex-completion)
 (package! helm-bibtex)
@@ -68,6 +72,8 @@
 (package! all-the-icons)
 (package! nerd-icons)
 (package! base16-theme)
+(package! tron-legacy-theme
+  :recipe (:host github :repo "ianyepan/tron-legacy-emacs-theme"))
 
 ; Org roam related packages
 (package! org-roam)
