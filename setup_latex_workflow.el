@@ -7,13 +7,60 @@
 ;
 ; Remove preamble at start of document in org to latex
 (setq org-latex-with-hyperref nil)
+
 ; -----------------------------------------------------------
 ;                       REFERENCING
 ; -----------------------------------------------------------
+;(add-to-list 'load-path "/Applications/Emacs.app/Contents/Resources/lisp/filenotify.el")
+
 ; Bib files which have all of my references
-(setq my/bib_files '("~/PhD/BIBTEX/PhD_betterbibtex.bib"
+(setq my/bib_files '("~/PhD/BIBTEX/0.BIBFILES/PhD_betterbibtex.bib"
                      "~/WORK/Consulting/SCYC/BIBTEX/SCYC_betterbiblatex.bib"))
                      ;"~/PhD/BIBTEX/PhD_betterbiblatex.bib"
+
+
+;(setq inhibit-startup-message t)
+(require 'filenotify)
+
+(setq my/bib_files '("~/PhD/BIBTEX/0.BIBFILES/PhD_betterbibtex.bib"
+                     "~/WORK/Consulting/SCYC/BIBTEX/SCYC_betterbiblatex.bib"))
+
+(defun reload-bibtex-file (bibtex-file)
+  "Reloads bibtex file into the buffer."
+  (when (file-exists-p bibtex-file)
+    (find-file bibtex-file)
+    (revert-buffer t t)
+    (message "Reloaded BibTeX file: %s" bibtex-file)))
+
+(defun handle-bibtex-file-change (event)
+  "Callback function to handle BibTeX file change events."
+  "Callback function to handle BibTeX file change events."
+  ; NOTE: event from file-notify contains two elements, nth 0 is the path and nth 1 is the type of even
+  ; i.e. changed, created, deleted, or attribute-change. This function receives the event input and
+  ; then assigs these variable names of file and event-type respectively.
+  (let ((event-type (nth 1 event))
+        (bibtex-file (nth 2 event)))
+    (message "Event type: %s, BibTeX file: %s" event-type bibtex-file)
+    (when (eq event-type 'changed)
+      (message "BibTeX file changed: %s" bibtex-file)
+      (reload-bibtex-file bibtex-file))))
+
+(defun bibtex-refresh ()
+  "Watch BibTeX files for updating by Zotero and reload."
+  (interactive)
+  (dolist (bibtex-file my/bib_files)
+    (when (file-exists-p bibtex-file)
+      (file-notify-add-watch bibtex-file '(change) #'handle-bibtex-file-change)
+      (message "Watching %s for changes" bibtex-file))))
+
+;; Start watching the BibTeX files and refreshing where necessary
+(bibtex-refresh)
+; Notes: we are using file-notify-add-watch here.
+; It has three arguments: FILE  FLAGS  CALLBACK
+; - FILE: The path to the file or directory you want to watch. It can be either absolute or relative.
+; - FLAGS: A list of symbols specifying the types of events to watch for. Common flags include:
+; change / create / delete or attribute-change are the options here
+; - CALLBACK: A function that gets called when one of the specified events occurs. The callback function receives a single argument, event, which is a list containing details about the event.
 
 ; Org cite is the inbuilt ref management in emacs
 (after! oc
@@ -111,7 +158,7 @@
 (use-package org-noter
   :config
   (setq org-noter-notes-search-path '("/Users/chris/org/notes/refs/PhD/"))) ; path to citar-org-roam-subdir
-(pdf-loader-install)
+;(pdf-loader-install)
 ;(org-noter-enable-org-roam-integration)
 
 ; If you highlight text this will put highlighted text in the .org roam file you are taking notes in
@@ -219,7 +266,7 @@
 ; -----------------------------------------------------------
 (use-package pdf-tools
   :config
-  (pdf-tools-install)
+  ;(pdf-tools-install)
   ;; This means that pdfs are fitted to width by default when you open them
   (setq-default pdf-view-display-size 'fit-width)
   :custom

@@ -58,6 +58,12 @@
 (package! centaur-tabs)
 (package! theme-changer)
 (package! marginalia)
+(package! powerthesaurus)
+
+
+; R / ESS
+(package! ess-plot
+  :recipe (:host github :repo "DennieTeMolder/ess-plot"))
 
 ; Latex and bibtex
 (package! unfill) ; expanding and contracting paragraphs
@@ -75,6 +81,7 @@
 (package! tron-legacy-theme
   :recipe (:host github :repo "ianyepan/tron-legacy-emacs-theme"))
 
+
 ; Org roam related packages
 (package! org-roam)
 (package! org-roam-bibtex
@@ -84,6 +91,9 @@
 (package! org-pdftools)
 (package! org-noter-pdftools)
 
+; Emac
+(package! webkit
+  :recipe (:host github :repo "akirakyle/emacs-webkit"))
 
 (package! cdlatex)
 (package! citar)

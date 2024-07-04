@@ -1,40 +1,24 @@
 ;;; ess_setup.el -*- lexical-binding: t; -*-
 
+; ------------------------------------------------------------------
+; ESS - Emacs Speaks Statistics
+; Description: this is what I use for coding in R
+; ------------------------------------------------------------------
+(setq indent-guide-recursive t)
 
-; R studio like settings
-(setq display-buffer-alist
-      '(("*R Dired"
-     (display-buffer-reuse-window display-buffer-at-bottom)
-     (window-width . 0.5)
-     (window-height . 0.25)
-     (reusable-frames . nil))
-    ("*R"
-     (display-buffer-reuse-window display-buffer-in-side-window)
-     (side . right)
-     (slot . -1)
-     (window-width . 0.5)
-     (reusable-frames . nil))
-    ("*Help"
-     (display-buffer-reuse-window display-buffer-in-side-window)
-     (side . right)
-     (slot . 1)
-     (window-width . 0.5)
-     (reusable-frames . nil))))
+; Allows variable vewing
+(use-package ess-view-data)
 
-;; Activate global mode for parenthesis matching:
-(show-paren-mode)
+; ESS
+(use-package! ess
+  :config
+
+  ; Display line numbers
+(setq display-line-numbers-type 'relative)
 
 ;; Remove Flymake support:
 (setq ess-use-flymake nil)
-;; Replace it (globally) by Flycheck:
-(use-package flycheck
-  :init
-  (global-flycheck-mode t))
 
-; allows variable vewing
-(use-package ess-view-data)
-(use-package! ess
-  :config
   (set-popup-rules!
     '(("^\\*R:*\\*$" :side right :size 0.5 :ttl nil)))
   (setq ess-R-font-lock-keywords
@@ -53,8 +37,23 @@
   (map! (:map (ess-mode-map inferior-ess-mode-map)
          :g ";" #'ess-insert-assign)))
 
+(define-key ess-mode-map (kbd "<C-return>") 'ess-eval-paragraph-and-step)
+; means that ESS does not hold up things while it is thinking
+(setq ess-eval-visibly 'nowait)
+
+;; Activate global mode for parenthesis matching:
+(show-paren-mode)
+
+;; Replace flymake support in ESS with it (globally) by Flycheck:
+(use-package flycheck
+  :init
+  (global-flycheck-mode t))
+
 ; Rstudio like setup in ESS - interactive function so you can call with M-x
-; https://www.reddit.com/r/emacs/comments/15ggow0/i_need_some_help_with_my_rstudio_layout_for_ess/
+;(use-package! ess-plot
+  ;:defer t)
+
+;https://www.reddit.com/r/emacs/comments/15ggow0/i_need_some_help_with_my_rstudio_layout_for_ess/
 (defun my-rstudio-layout () ""
        (interactive)
        (add-to-list 'display-buffer-alist
@@ -102,4 +101,17 @@
          (ess-rdired)
          (ess-help "help")
          (tab-line-mode 1)
-         (my-start-hdg)))
+         ;(my-start-hdg)
+         ))
+
+(defun clear-shell ()
+   (interactive)
+   (let ((old-max comint-buffer-maximum-size))
+     (setq comint-buffer-maximum-size 0)
+     (comint-truncate-buffer)
+     (setq comint-buffer-maximum-size old-max)))
+
+(global-set-key  (kbd "\C-x c") 'clear-shell)
+
+; Evaluate code from the beginning of the script up to your mouse pointer
+;(global-set-key (kbd "C-c C-r" 'ess-eval-buffer-from-beg-to-here)

@@ -75,9 +75,9 @@
 ; ------------------------------------------------------------------
 ; TRANSPARENT SCREEN - https://kristofferbalintona.me/posts/202206071000/
 ; ------------------------------------------------------------------
-(set-frame-parameter (selected-frame) 'alpha 75) ;
+(set-frame-parameter (selected-frame) 'alpha 70) ;
 (set-frame-parameter (selected-frame) 'alpha-background 100)   ;
-(add-to-list 'default-frame-alist '(alpha . 75))
+(add-to-list 'default-frame-alist '(alpha . 70))
 (add-to-list 'default-frame-alist '(alpha-background . 100))
 
 ; This function needs a bit of work - does not toggle in a loop
@@ -91,7 +91,7 @@
                      ;; Also handle undocumented (<active> <inactive>) form.
                      ((numberp (cadr alpha)) (cadr alpha)))
                100)
-          '(100. 75) '(100 . 100)
+          '(100. 70) '(100 . 100)
           )
       )
      )
@@ -121,6 +121,7 @@
 ; - Isoveska
 (setq doom-font (font-spec :family "Ubuntu Mono" :size 12)
       doom-variable-pitch-font (font-spec :family "Ubuntu Mono" :size 12))
+
 
 ; ------------------------------------------------------------------
 ; TREEMACS & PROJECTILE - manages projects
@@ -164,8 +165,6 @@
 (projectile-add-known-project "~/PhD/PROJECTS/5.CIRCULAR_BUCKET/")
 (projectile-add-known-project "~/PhD/PROJECTS/DIARY/")
 
-; means that ESS does not hold up things while it is thinking
-(setq ess-eval-visibly 'nowait)
 
 ; ------------------------------------------------------------------
 ; VERTICO COMPLETION
@@ -249,15 +248,19 @@
 ; ------------------------------------------------------------------
 ; WHAT TO OPEN WHEN EMACS STARTS UP
 ; ------------------------------------------------------------------
-; This is just a list of things to open when you start emacs every day
-(defun emacs-startup-screen ()
-  "Display the weekly org-agenda and all todos."
-  (org-agenda "a" "a"))
-(add-hook 'emacs-startup-hook #'emacs-startup-screen)
+(defun startup-window-doom ()
+  "This is a lisp function to setup windows on emacs doom"
+(delete-other-windows)
+(split-window-right)
+(org-agenda "a" "a"))
+
+(add-hook 'emacs-startup-hook 'startup-window-doom)
+
 (setq-default inhibit-startup-buffer-menu t)
 
 ; ------------------------------------------------------------------
-; ESS - Emacs Speaks Statistics
-; Description: this is m
+; POWER THESAURUS
 ; ------------------------------------------------------------------
-(define-key ess-mode-map (kbd "<C-return>") 'ess-eval-paragraph-and-step)
+(use-package powerthesaurus
+  :bind
+  ("M-`" . powerthesaurus-lookup-word-dwim))
