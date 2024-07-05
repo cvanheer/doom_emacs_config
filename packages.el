@@ -51,6 +51,7 @@
 (package! exec-path-from-shell)
 (package! dashboard)
 (package! pdf-tools)
+
 (package! treemacs-icons-dired)
 (package! treemacs-magit)
 (package! treemacs-projectile)
@@ -65,7 +66,7 @@
 (package! which-key)
 (package! powerthesaurus)
 (package! aggressive-indent)
-
+(package! undo-tree)
 
 ; R / ESS
 ;; (package! ess-plot

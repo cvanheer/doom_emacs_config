@@ -112,21 +112,44 @@
   :config
   (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
   (add-hook 'css-mode-hook #'aggressive-indent-mode)
-  (global-aggressive-indent-mode 1)
-  (add-to-list 'aggressive-indent-excluded-modes 'html-mode)
+                                        ;(global-aggressive-indent-mode 1)
+
+
+  ;; Define a function to enable aggressive-indent-mode
+  (defun enable-aggressive-indent ()
+    "Enable aggressive-indent-mode."
+    (interactive)
+    (aggressive-indent-mode 1))
+
+  ; Activate aggressive-indent-mode in ess-r-mode (R mode)
+  (add-hook 'ess-r-mode-hook 'enable-aggressive-indent)
+  (add-hook 'ess-lisp-mode-hook 'enable-aggressive-indent)
+
   )
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type t)
 
+                                        ; ------------------------------------------------------------------
+                                        ; UNDO TREE
+                                        ; ------------------------------------------------------------------
+(use-package undo-tree
+  :config
+  (global-undo-tree-mode)
+  :custom
+  (undo-tree-auto-save-history nil))
+
+                                        ; ------------------------------------------------------------------
+                                        ; FONTS
+                                        ; ------------------------------------------------------------------
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-;(setq org-directory "~/org/"
+                                        ;(setq org-directory "~/org/"
 
-; Other fonts I like if you wanna spice things up:
-; - JetBrains Mono
-; - Isoveska
+                                        ; Other fonts I like if you wanna spice things up:
+                                        ; - JetBrains Mono
+                                        ; - Isoveska
 (setq doom-font (font-spec :family "Ubuntu Mono" :size 15)
       doom-variable-pitch-font (font-spec :family "Ubuntu Mono" :size 15))
 
