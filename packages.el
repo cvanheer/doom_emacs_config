@@ -58,12 +58,19 @@
 (package! centaur-tabs)
 (package! theme-changer)
 (package! marginalia)
+(package! consult)
+(package! orderless)
+(package! cape)
+(package! corfu)
+(package! which-key)
 (package! powerthesaurus)
+(package! aggressive-indent)
 
 
 ; R / ESS
-(package! ess-plot
-  :recipe (:host github :repo "DennieTeMolder/ess-plot"))
+;; (package! ess-plot
+;;   :recipe (:host github :repo "DennieTeMolder/ess-plot"))
+(package! company) ; for completion only
 
 ; Latex and bibtex
 (package! unfill) ; expanding and contracting paragraphs
@@ -120,7 +127,6 @@
 (package! markdown-mode)
 ;(package! quarto-mode)
 (package! request)
-
 
 (package! doom-nano-modeline
   :recipe (:host github

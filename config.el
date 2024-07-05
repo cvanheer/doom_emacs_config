@@ -107,6 +107,14 @@
 (global-visual-line-mode t)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
+; Aggressive indenting
+(use-package aggressive-indent
+  :config
+  (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
+  (add-hook 'css-mode-hook #'aggressive-indent-mode)
+  (global-aggressive-indent-mode 1)
+  (add-to-list 'aggressive-indent-excluded-modes 'html-mode)
+  )
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -119,10 +127,22 @@
 ; Other fonts I like if you wanna spice things up:
 ; - JetBrains Mono
 ; - Isoveska
-(setq doom-font (font-spec :family "Ubuntu Mono" :size 12)
-      doom-variable-pitch-font (font-spec :family "Ubuntu Mono" :size 12))
+(setq doom-font (font-spec :family "Ubuntu Mono" :size 15)
+      doom-variable-pitch-font (font-spec :family "Ubuntu Mono" :size 15))
 
+; FUNCTION TO CHANGE FONT
+; Note: Emacs specifies font size in 1/10 pt units. Therefore, a font size of 12 pt is represented as 120, which
+; means that the function below does a bit of a convert thing
+(defun my/change-font (font-family font-size)
+  "Change the default font to FONT-FAMILY with FONT-SIZE."
+  (interactive
+   (list (completing-read "Font family: " (font-family-list))
+         (read-number "Font size (pt): " 14)))  ; Prompt for size in pt
+  (set-face-attribute 'default nil
+                      :family font-family
+                      :height (* font-size 10)))  ; Convert pt to Emacs units
 
+(global-set-key (kbd "C-c f") 'my/change-font)
 ; ------------------------------------------------------------------
 ; TREEMACS & PROJECTILE - manages projects
 ; ------------------------------------------------------------------
@@ -167,12 +187,101 @@
 
 
 ; ------------------------------------------------------------------
-; VERTICO COMPLETION
+; VERTICO COMPLETION / CONSULT COMPLETION
 ; ------------------------------------------------------------------
+
+(use-package consult
+  :bind (
+         ("C-s" . consult-line)
+         ("M-y" . consult-yank-pop)
+         ("C-x b" . consult-buffer)
+         ("C-c h" . consult-history)
+         ("C-c m" . consult-mode-command)
+         ("C-c k" . consult-kmacro)
+         ("C-c i" . consult-imenu)
+         ("C-c I" . consult-imenu-multi)
+         ("C-c o" . consult-outline)
+         ("C-c g" . consult-grep)
+         ("C-c f" . consult-find)
+         ("C-c l" . consult-locate)
+         ("C-c L" . consult-locate-library)
+         ("C-c b" . consult-bookmark)
+         ("C-c m" . consult-man)
+         ("C-c k" . consult-key-sequence)
+         ("C-c c" . consult-completion-in-region)
+         ("C-c e" . consult-compile-error)
+         ("C-c r" . consult-ripgrep)
+         ("C-c C-l" . consult-line)
+         ("C-c C-b" . consult-buffer)
+         )
+  :config
+  (setq consult-preview-key '(:debounce 0.5 any))
+  (consult-customize consult-theme :preview-key '(:debounce 0.5 any))
+  (setq consult-narrow-key "<")
+  (setq consult-line-start-from-top t))
+
+
 (use-package vertico
   :init
-  (vertico-mode)
-)
+  (vertico-mode 1)
+
+  :config
+  (setq vertico-multiform-commands
+    '((consult-line buffer)
+      (consult-line-thing-at-point buffer)
+      (consult-recent-file buffer)
+      (consult-mode-command buffer)
+      (consult-complex-command buffer)
+      (embark-bindings buffer)
+      (consult-locate buffer)
+      (consult-project-buffer buffer)
+      (consult-ripgrep buffer)
+      (consult-fd buffer)))
+  :bind (:map vertico-map
+          ("C-k" . kill-whole-line)
+          ("C-u" . kill-whole-line)
+          ("C-o" . vertico-next-group)
+          ("<tab>" . minibuffer-complete)
+          ("M-<return>" . minibuffer-force-complete-and-exit)))
+
+(setq vertico-multiform t)
+
+;; Enable Corfu for inline completion
+(use-package corfu
+  :custom
+  (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous`
+  (corfu-auto t)                 ;; Enable auto completion
+  (corfu-quit-no-match 'separator) ;; Don't quit if no match
+  :bind (:map corfu-map
+              ("TAB" . corfu-next)
+              ([tab] . corfu-next)
+              ("S-TAB" . corfu-previous)
+              ([backtab] . corfu-previous))
+  :init
+  (global-corfu-mode))
+
+;; Optional: Combine Company and Corfu so you have a good experience of both
+(setq company-idle-delay 0.2
+      company-minimum-prefix-length 1
+      company-tooltip-align-annotations t)
+
+;; Use Cape for additional completion sources
+(use-package cape
+  :init
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev))
+
+;; Enable Orderless completion style
+(use-package orderless
+  :custom
+  (completion-styles '(orderless))
+  (completion-category-defaults nil)
+  (completion-category-overrides '((file (styles partial-completion)))))
+
+;; Enable Which-Key for displaying possible keybindings
+(use-package which-key
+  :config
+  (which-key-mode))
 
 ; ------------------------------------------------------------------
 ; RANDOM SHIT

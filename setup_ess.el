@@ -4,7 +4,10 @@
 ; ESS - Emacs Speaks Statistics
 ; Description: this is what I use for coding in R
 ; ------------------------------------------------------------------
+
+; GENERAL R RELATED SETTINGS for coding
 (setq indent-guide-recursive t)
+(setq inferior-R-args "--no-save --no-restore-data")
 
 ; Allows variable vewing
 (use-package ess-view-data)
@@ -13,14 +16,17 @@
 (use-package! ess
   :config
 
-  ; Display line numbers
-(setq display-line-numbers-type 'relative)
+  (require 'ess-site)
+  (add-hook 'ess-mode-hook #'rainbow-delimiters-mode)
+  (setq ess-style 'RStudio)  ;; Use RStudio's indentation style
+  (setq ess-indent-offset 4)  ;; Indent code by 4 spaces
+  (setq display-line-numbers-type 'relative)
+  (setq ess-use-flymake nil)
+  (setq ess-eval-visibly 'nowait)
 
-;; Remove Flymake support:
-(setq ess-use-flymake nil)
+  ;; (set-popup-rules!
+  ;;   '(("^\\*R:*\\*$" :side right :size 0.5 :ttl nil)))
 
-  (set-popup-rules!
-    '(("^\\*R:*\\*$" :side right :size 0.5 :ttl nil)))
   (setq ess-R-font-lock-keywords
         '((ess-R-fl-keyword:keywords . t)
           (ess-R-fl-keyword:constants . t)
@@ -35,11 +41,24 @@
           (ess-fl-keyword:= . t)
           (ess-R-fl-keyword:F&T . t)))
   (map! (:map (ess-mode-map inferior-ess-mode-map)
-         :g ";" #'ess-insert-assign)))
+         :g ";" #'ess-insert-assign))
 
-(define-key ess-mode-map (kbd "<C-return>") 'ess-eval-paragraph-and-step)
-; means that ESS does not hold up things while it is thinking
-(setq ess-eval-visibly 'nowait)
+  ; DEFINE KEYS
+  (define-key comint-mode-map [C-up] 'ess-readline)
+  (define-key ess-mode-map (kbd "C-c C-r") 'ess-eval-region)
+  (define-key ess-mode-map (kbd "C-c C-b") 'ess-eval-buffer)
+  (define-key ess-mode-map (kbd "C-c C-n") 'ess-eval-line-and-step)
+  (define-key ess-mode-map (kbd "<C-return>") 'ess-eval-paragraph-and-step)
+
+    ;; Load company-mode only for ESS
+  (use-package company
+    :ensure t
+    :config
+    (add-hook 'ess-mode-hook 'company-mode)
+    (add-hook 'inferior-ess-mode-hook 'company-mode)
+    (add-hook 'R-mode-hook 'company-mode))
+
+)
 
 ;; Activate global mode for parenthesis matching:
 (show-paren-mode)
@@ -54,55 +73,40 @@
   ;:defer t)
 
 ;https://www.reddit.com/r/emacs/comments/15ggow0/i_need_some_help_with_my_rstudio_layout_for_ess/
-(defun my-rstudio-layout () ""
+(defun my/rstudio-layout () ""
        (interactive)
        (add-to-list 'display-buffer-alist
-                    '((derived-mode . ess-mode)
-                      (display-buffer-reuse-window)
-                      (side .  left)
-                      (slot . -1)
-                      (dedicated . t)
-                      (tab-group . "rstudio-1")))
-
-
-       (add-to-list 'display-buffer-alist
-                    `("^\\*help\\[R\\]\\|^\\*xwidget-webkit"
-                      (display-buffer-reuse-mode-window  display-buffer-in-side-window)
-                      (mode . '(ess-help-mode xwidget-webkit-mode))
+                    `("^\\*help\\[R\\]"
+                      (display-buffer-reuse-window display-buffer-in-side-window)
                       (side . right)
                       (slot . 1)
                       (window-width . 0.33)
-                      (dedicated . nil)))
-
-
+                      (reusable-frames . nil)))
+       (add-to-list 'display-buffer-alist
+                    `("^\\*xwidget-webkit*."
+                      (display-buffer-reuse-window display-buffer-in-side-window)
+                      (side . right)
+                      (slot . 1)
+                      (window-width . 0.33)
+                      (reusable-frames . nil)))
        (add-to-list 'display-buffer-alist
                     `("^\\*R.*\\*"
-                      (display-buffer-reuse-mode-window display-buffer-at-bottom)
-                      (mode . ess-mode)
+                      (display-buffer-reuse-window display-buffer-at-bottom)
                       (window-width . 0.5)
-                      (dedicated . t)
-                      (tab-group "rstudio-3")))
-
+                      (dedicated . t)))
        (add-to-list 'display-buffer-alist
                     `("^\\*R dired\\*"
-                      (display-buffer-reuse-mode-window display-buffer-in-side-window)
-                      (mode . ess-rdired-mode)
+                      (display-buffer-reuse-window display-buffer-in-side-window)
                       (side . right)
                       (slot . -1)
                       (window-width . 0.33)
-                      (dedicated . t)
-                      (reusable-frames . nil)
-                      (tab-group . "rstudio-2")))
-
+                      (reusable-frames . nil)))
        (let ((ess-startup-directory 'default-directory)
              (ess-ask-for-ess-directory nil))
          (delete-other-windows)
          (ess-switch-to-ESS t)
-         (ess-rdired)
          (ess-help "help")
-         (tab-line-mode 1)
-         ;(my-start-hdg)
-         ))
+         (ess-rdired)))
 
 (defun clear-shell ()
    (interactive)
@@ -111,7 +115,7 @@
      (comint-truncate-buffer)
      (setq comint-buffer-maximum-size old-max)))
 
+
+
 (global-set-key  (kbd "\C-x c") 'clear-shell)
 
-; Evaluate code from the beginning of the script up to your mouse pointer
-;(global-set-key (kbd "C-c C-r" 'ess-eval-buffer-from-beg-to-here)
