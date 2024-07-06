@@ -115,13 +115,13 @@
                                         ;(global-aggressive-indent-mode 1)
 
 
-  ;; Define a function to enable aggressive-indent-mode
+                                        ; Define a function to enable aggressive-indent-mode
   (defun enable-aggressive-indent ()
     "Enable aggressive-indent-mode."
     (interactive)
     (aggressive-indent-mode 1))
 
-  ; Activate aggressive-indent-mode in ess-r-mode (R mode)
+                                        ; Activate aggressive-indent-mode in ess-r-mode (R mode)
   (add-hook 'ess-r-mode-hook 'enable-aggressive-indent)
   (add-hook 'ess-lisp-mode-hook 'enable-aggressive-indent)
 
@@ -372,7 +372,8 @@
 (load "~/.config/doom/setup_org_agenda.el")
 (load "~/.config/doom/setup_latex_workflow.el")
 (load "~/.config/doom/setup_ox_latex_classes.el")
-;(load "~/.config/doom/setup_dashboard.el")
+(load "~/.config/doom/setup_useful_modes.el")
+                                        ;(load "~/.config/doom/setup_dashboard.el")
 (load "~/.config/doom/setup_ess.el")
 (load "~/.config/doom/setup_elfeed.el")
 (load "~/.config/doom/setup_markdown.el") ; this includes quarto mode
@@ -382,9 +383,10 @@
 ; ------------------------------------------------------------------
 (defun startup-window-doom ()
   "This is a lisp function to setup windows on emacs doom"
-(delete-other-windows)
-(split-window-right)
-(org-agenda "a" "a"))
+                                        ;(split-window-right)
+                                        ;(org-agenda "a" "a"))
+  (delete-other-windows))
+
 
 (add-hook 'emacs-startup-hook 'startup-window-doom)
 
@@ -396,3 +398,21 @@
 (use-package powerthesaurus
   :bind
   ("M-`" . powerthesaurus-lookup-word-dwim))
+
+
+;; ------------------------------------------------------------------
+;; THESIS STARTUP ROUTINE
+;; ------------------------------------------------------------------
+;; Open file in new frame
+(defun my-open-file-in-new-frame ()
+  "Prompt for a file and open it in a new frame."
+  (interactive)
+  (let ((file (read-file-name "Open file: ")))
+    (select-frame (make-frame))
+    (find-file file)))
+
+;; Using global-set-key
+(global-set-key (kbd "C-c o") 'my-open-file-in-new-frame)
+
+;; Or using map! in Doom Emacs
+;; (map! "C-c o" #'my-open-file-in-new-frame)

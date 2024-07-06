@@ -52,10 +52,14 @@
 (package! dashboard)
 (package! pdf-tools)
 
+
+                                        ; Treemacs
 (package! treemacs-icons-dired)
 (package! treemacs-magit)
 (package! treemacs-projectile)
 (package! treemacs-nerd-icons)
+
+                                        ; Tabs
 (package! centaur-tabs)
 (package! theme-changer)
 (package! marginalia)
@@ -72,8 +76,10 @@
 ;; (package! ess-plot
 ;;   :recipe (:host github :repo "DennieTeMolder/ess-plot"))
 (package! company) ; for completion only
+(package! essgd
+  :recipe (:host github :repo "sje30/essgd"))
 
-; Latex and bibtex
+                                        ; Latex and bibtex
 (package! unfill) ; expanding and contracting paragraphs
 (package! citar)
 (package! bibtex-completion)
@@ -88,9 +94,8 @@
 (package! base16-theme)
 (package! tron-legacy-theme
   :recipe (:host github :repo "ianyepan/tron-legacy-emacs-theme"))
-
-
-; Org roam related packages
+(package! olivetti)
+                                        ; Org roam related packages
 (package! org-roam)
 (package! org-roam-bibtex
   :recipe (:host github :repo "org-roam/org-roam-bibtex"))

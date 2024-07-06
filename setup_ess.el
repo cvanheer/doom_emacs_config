@@ -9,25 +9,16 @@
 (setq indent-guide-recursive t)
 (setq inferior-R-args "--no-save --no-restore-data")
 
-; Allows variable vewing
-(use-package ess-view-data)
-
-; ESS
+                                        ; ESS
 (use-package! ess
   :config
-
   (require 'ess-site)
-  (add-hook 'ess-mode-hook #'rainbow-delimiters-mode)
-
   (setq ess-history-directory nil)
   (setq ess-style 'RStudio)  ;; Use RStudio's indentation style
   (setq ess-indent-offset 4)  ;; Indent code by 4 spaces
   (setq display-line-numbers-type 'relative)
   (setq ess-use-flymake nil)
   (setq ess-eval-visibly 'nowait)
-
-  ;; (set-popup-rules!
-  ;;   '(("^\\*R:*\\*$" :side right :size 0.5 :ttl nil)))
 
   (setq ess-R-font-lock-keywords
         '((ess-R-fl-keyword:keywords . t)
@@ -42,25 +33,81 @@
           (ess-fl-keyword:delimiters . t)
           (ess-fl-keyword:= . t)
           (ess-R-fl-keyword:F&T . t)))
+
   (map! (:map (ess-mode-map inferior-ess-mode-map)
          :g ";" #'ess-insert-assign))
-                                        ; Define keys
+  ;; Define keys
   (define-key comint-mode-map [C-up] 'ess-readline)
   (define-key ess-mode-map (kbd "C-c C-r") 'ess-eval-region)
   (define-key ess-mode-map (kbd "C-c C-b") 'ess-eval-buffer)
   (define-key ess-mode-map (kbd "C-c C-n") 'ess-eval-line-and-step)
   (define-key ess-mode-map (kbd "<C-return>") 'ess-eval-paragraph-and-step)
   (define-key ess-mode-map (kbd "C-c C-r") 'ess-eval-region-or-function-or-paragraph-and-step)
+  (define-key ess-mode-map (kbd "C-c C-e") 'ess-eval-buffer-from-beg-to-here)
 
   ;; Load company-mode only for ESS
   (use-package company
-    :ensure t
-    :config
-    (add-hook 'ess-mode-hook 'company-mode)
-    (add-hook 'inferior-ess-mode-hook 'company-mode)
-    (add-hook 'R-mode-hook 'company-mode))
-
+    :hook
+    (ess-mode .  company-mode)
+    (R-mode . company-mode)
+    )
   )
+
+(use-package! essgd
+  :after ess
+  :config
+  ;; Keybindings for essgd plot viewer
+  (define-key essgd-mode-map (kbd "p") 'essgd-previous-plot)
+  (define-key essgd-mode-map (kbd "n") 'essgd-next-plot))
+
+;; --- PLOTTING views / data views
+(use-package ess-view-data
+  :after ess
+  :hook
+  (ess-mode . ess-view-data-mode))
+
+; Xwidget
+(use-package xwidget
+  :after ess)
+
+;;https://www.reddit.com/r/emacs/comments/15ggow0/i_need_some_help_with_my_rstudio_layout_for_ess/
+(defun my/rstudio-layout ()
+  "Set up a layout similar to RStudio."
+  (interactive)
+  (add-to-list 'display-buffer-alist
+               `("^\\*R:.*"
+                 (display-buffer-reuse-window display-buffer-at-bottom)
+                 (window-height . 0.3)
+                 (reusable-frames . nil)))
+  (add-to-list 'display-buffer-alist
+               `("^\\*ess-help.*^\\*essgd:.*"
+                 (display-buffer-reuse-window display-buffer-in-side-window)
+                 (side . right)
+                 (slot . 1)
+                 (window-width . 0.33)
+                 (reusable-frames . nil)))
+  (add-to-list 'display-buffer-alist
+               `("^\\*ess-rdired.*"
+                 (display-buffer-reuse-window display-buffer-in-side-window)
+                 (side . right)
+                 (slot . 2)
+                 (window-width . 0.33)
+                 (reusable-frames . nil)))
+
+  (let ((ess-startup-directory 'default-directory)
+        (ess-ask-for-ess-directory nil))
+    (delete-other-windows)
+    (ess-switch-to-ESS t)
+    (ess-help "help")
+    ))
+
+;; ------------------------------------------------------------------
+;; PLOTTING
+;; ------------------------------------------------------------------
+;; PLotting
+;; Install instrictions:
+;; You need this in yourremotes::install_github("nx10/httpgd")
+
 
 ;; Activate global mode for parenthesis matching:
 (show-paren-mode)
@@ -70,58 +117,11 @@
   :init
   (global-flycheck-mode t))
 
-                                        ; Rstudio like setup in ESS - interactive function so you can call with M-x
-                                        ;(use-package! ess-plot
+;; Rstudio like setup in ESS - interactive function so you can call with M-x
+;;(use-package! ess-plot
                                         ;:defer t)
 
-                                        ;https://www.reddit.com/r/emacs/comments/15ggow0/i_need_some_help_with_my_rstudio_layout_for_ess/
-(defun my/rstudio-layout () ""
-       (interactive)
-       (add-to-list 'display-buffer-alist
-                    '((derived-mode . ess-mode)
-                      (display-buffer-reuse-window)
-                      (side .  left)
-                      (slot . -1)
-                      (dedicated . t)
-                      (tab-group . "rstudio-1")))
 
-
-       (add-to-list 'display-buffer-alist
-                    `("^\\*help\\[R\\]\\|^\\*xwidget-webkit"
-                      (display-buffer-reuse-mode-window  display-buffer-in-side-window)
-                      (mode . '(ess-help-mode xwidget-webkit-mode))
-                      (side . right)
-                      (slot . 1)
-                      (window-width . 0.33)
-                      (dedicated . nil)))
-
-
-       (add-to-list 'display-buffer-alist
-                    `("^\\*R.*\\*"
-                      (display-buffer-reuse-mode-window display-buffer-at-bottom)
-                      (mode . ess-mode)
-                      (window-width . 0.5)
-                      (dedicated . t)
-                      (tab-group "rstudio-3")))
-
-       (add-to-list 'display-buffer-alist
-                    `("^\\*R dired\\*"
-                      (display-buffer-reuse-mode-window display-buffer-in-side-window)
-                      (mode . ess-rdired-mode)
-                      (side . right)
-                      (slot . -1)
-                      (window-width . 0.33)
-                      (dedicated . t)
-                      (reusable-frames . nil)
-                      (tab-group . "rstudio-2")))
-       (let ((ess-startup-directory 'default-directory)
-             (ess-ask-for-ess-directory nil))
-         (delete-other-windows)
-         (ess-switch-to-ESS t)
-         (ess-help "help")
-                                        ;(ess-rdired)
-
-         ))
 
 (defun clear-shell ()
   (interactive)

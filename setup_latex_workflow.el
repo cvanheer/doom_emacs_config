@@ -8,22 +8,19 @@
 ; Remove preamble at start of document in org to latex
 (setq org-latex-with-hyperref nil)
 
-; -----------------------------------------------------------
-;                       REFERENCING
-; -----------------------------------------------------------
-;(add-to-list 'load-path "/Applications/Emacs.app/Contents/Resources/lisp/filenotify.el")
+;; -----------------------------------------------------------
+;;                       REFERENCING
+;; -----------------------------------------------------------
+                                        ;(add-to-list 'load-path "/Applications/Emacs.app/Contents/Resources/lisp/filenotify.el")
 
-; Bib files which have all of my references
+                                        ; Bib files which have all of my references
 (setq my/bib_files '("~/PhD/BIBTEX/0.BIBFILES/PhD_betterbibtex.bib"
                      "~/WORK/Consulting/SCYC/BIBTEX/SCYC_betterbiblatex.bib"))
-                     ;"~/PhD/BIBTEX/PhD_betterbiblatex.bib"
+                                        ;"~/PhD/BIBTEX/PhD_betterbiblatex.bib"
+(setq my/default_thesis_file "~/PhD/PROJECTS/3.BUCKET_AR2/3.doc/math_bridging_chapter.tex")
 
-
-;(setq inhibit-startup-message t)
+                                        ;(setq inhibit-startup-message t)
 (require 'filenotify)
-
-(setq my/bib_files '("~/PhD/BIBTEX/0.BIBFILES/PhD_betterbibtex.bib"
-                     "~/WORK/Consulting/SCYC/BIBTEX/SCYC_betterbiblatex.bib"))
 
 (defun reload-bibtex-file (bibtex-file)
   "Reloads bibtex file into the buffer."
@@ -339,13 +336,27 @@ to IT for use in the THEN and ELSE clauses"
 
 ; https://github.com/jrblevin/deft/issues/75
 (advice-add 'deft-parse-title :override
-    (lambda (file contents)
-      (if deft-use-filename-as-title
-	  (deft-base-filename file)
-	(let* ((case-fold-search 't)
-	       (begin (string-match "title: " contents))
-	       (end-of-begin (match-end 0))
-	       (end (string-match "\n" contents begin)))
-	  (if begin
-	      (substring contents end-of-begin end)
-	    (format "%s" file))))))
+            (lambda (file contents)
+              (if deft-use-filename-as-title
+	          (deft-base-filename file)
+	        (let* ((case-fold-search 't)
+	               (begin (string-match "title: " contents))
+	               (end-of-begin (match-end 0))
+	               (end (string-match "\n" contents begin)))
+	          (if begin
+	              (substring contents end-of-begin end)
+	            (format "%s" file))))))
+
+;; -----------------------------------------------------------
+;;                      DEFT
+;; -----------------------------------------------------------
+(use-package olivetti
+  :after citar
+  :hook ((text-mode . olivetti-mode)
+         (latex-mode . olivetti-mode)
+         (markdown-mode . olivetti-mode))
+  :custom
+  (olivetti-body-width 80)  ;; Set body width to 80 characters
+  (olivetti-minimum-body-width 40)
+  (olivetti-recall-visual-line-mode-entry-state t))
+
