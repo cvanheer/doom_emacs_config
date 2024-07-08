@@ -43,7 +43,7 @@
 
 
 ;; (use-package! doom-nano-modeline
-;;   :config
+;;   :confi`'g
 ;;   (doom-nano-modeline-mode 1)
 ;;   (global-hide-mode-line-mode 1))
 
@@ -75,29 +75,58 @@
 ; ------------------------------------------------------------------
 ; TRANSPARENT SCREEN - https://kristofferbalintona.me/posts/202206071000/
 ; ------------------------------------------------------------------
-(set-frame-parameter (selected-frame) 'alpha 70) ;
-(set-frame-parameter (selected-frame) 'alpha-background 100)   ;
-(add-to-list 'default-frame-alist '(alpha . 70))
-(add-to-list 'default-frame-alist '(alpha-background . 100))
+;; (set-frame-parameter (selected-frame) 'alpha 0 7) ;
+;; (set-frame-parameter (selected-frame) 'alpha-background 0 100)   ;
+;; (add-to-list 'default-frame-alist '(alpha . 0 70))
+;; (add-to-list 'default-frame-alist '(alpha-background .0 100))
 
-; This function needs a bit of work - does not toggle in a loop
-(defun my/toggle-transparency ()
-   (interactive)
-   (let ((alpha (frame-parameter nil 'alpha)))
-     (set-frame-parameter
-      nil 'alpha
-      (if (eql (cond ((numberp alpha) alpha)
-                     ((numberp (cdr alpha)) (cdr alpha))
-                     ;; Also handle undocumented (<active> <inactive>) form.
-                     ((numberp (cadr alpha)) (cadr alpha)))
-               100)
-          '(100. 70) '(100 . 100)
-          )
-      )
-     )
-   )
- (global-set-key (kbd "C-c t") 'my/toggle-transparency)
+;; ; This function needs a bit of work - does not toggle in a loop
+;; (defun my/toggle-transparency ()
+;;    (interactive)
+;;    (let ((alpha (frame-parameter nil 'alpha)))
+;;      (set-frame-parameter
+;;       nil 'alpha
+;;       (if (eql (cond ((numberp alpha) alpha)
+;;                      ((numberp (cdr alpha)) (cdr alpha))
+;;                      ;; Also handle undocumented (<active> <inactive>) form.
+;;                      ((numberp (cadr alpha)) (cadr alpha)))
+;;                100)
+;;           '(100. 70) '(100 . 100)
+;;           )
+;;       )
+;;      )
+;;    )
+ ;(global-set-key (kbd "C-c s") 'my/toggle-transparency)
+(defvar my/transparency-settings '(100 85 70 55)
+  "List of background transparency settings to toggle through.")
 
+(defun my/cycle-background-transparency ()
+  "Cycle through a predefined list of background transparency settings."
+  (interactive)
+  (let* ((current-alpha (or (frame-parameter nil 'alpha-background) 100))
+         (next-alpha (or (cadr (member current-alpha my/transparency-settings))
+                         (car my/transparency-settings))))
+    (set-frame-parameter nil 'alpha-background next-alpha)
+    (set-frame-parameter nil 'alpha (cons 100 next-alpha))
+    (message "Set background transparency to %d" next-alpha)))
+
+(defun my/update-background-transparency-on-focus (frame)
+  "Update background transparency based on frame focus."
+  (if (frame-focus-state frame)
+      (set-frame-parameter frame 'alpha-background 100)
+    (set-frame-parameter frame 'alpha-background (car my/transparency-settings)))
+  (set-frame-parameter frame 'alpha (cons 100 (frame-parameter frame 'alpha-background))))
+
+;; Hook to handle frame focus change
+(add-function :after after-focus-change-function
+              (lambda ()
+                (my/update-background-transparency-on-focus (selected-frame))))
+
+;; Optional: Keybinding to toggle background transparency
+(global-set-key (kbd "C-c z") 'my/cycle-background-transparency)
+
+;; Ensure initial background transparency is set correctly
+(my/update-background-transparency-on-focus (selected-frame))
 ; ------------------------------------------------------------------
 ; TEXT / LINE WRAPPING
 ; ------------------------------------------------------------------
@@ -123,7 +152,7 @@
 
                                         ; Activate aggressive-indent-mode in ess-r-mode (R mode)
   (add-hook 'ess-r-mode-hook 'enable-aggressive-indent)
-  (add-hook 'ess-lisp-mode-hook 'enable-aggressive-indent)
+ ;(add-hook 'ess-lisp-mode-hook 'enable-aggressive-indent)
 
   )
 

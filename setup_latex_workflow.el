@@ -356,7 +356,7 @@ to IT for use in the THEN and ELSE clauses"
          (latex-mode . olivetti-mode)
          (markdown-mode . olivetti-mode))
   :custom
-  (olivetti-body-width 80)  ;; Set body width to 80 characters
+  (olivetti-body-width 120)  ;; Set body width to 80 characters
   (olivetti-minimum-body-width 40)
   (olivetti-recall-visual-line-mode-entry-state t))
 
