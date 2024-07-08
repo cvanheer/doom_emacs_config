@@ -5,8 +5,6 @@
 ; This workflow uses marginalia for useful notes about stuff in the margins, and vertico and embark for completion - these are again, more modern than helm/ivy etc but they require a bit more research in terms of getting the right configuration.
 ; PDFs - I have stored my PDFs in Zotero but after import I use something to get the PDFs renamed according to their citekey and then stored in ~/PhD/BIBTEX/{citekey}/{citekey.pdf}. org-noter links to the papers by having a property called :NOTER_DOCUMENT: which links to the pdf - so putting your cursor next to that and typing "org_noter" will bring up a note
 ;
-; Remove preamble at start of document in org to latex
-(setq org-latex-with-hyperref nil)
 
 ;; -----------------------------------------------------------
 ;;                       REFERENCING
@@ -17,9 +15,7 @@
 (setq my/bib_files '("~/PhD/BIBTEX/0.BIBFILES/PhD_betterbibtex.bib"
                      "~/WORK/Consulting/SCYC/BIBTEX/SCYC_betterbiblatex.bib"))
                                         ;"~/PhD/BIBTEX/PhD_betterbiblatex.bib"
-(setq my/default_thesis_file "~/PhD/PROJECTS/3.BUCKET_AR2/3.doc/math_bridging_chapter.tex")
 
-                                        ;(setq inhibit-startup-message t)
 (require 'filenotify)
 
 (defun reload-bibtex-file (bibtex-file)
@@ -63,15 +59,29 @@
 (after! oc
   (setq org-cite-global-bibliography my/bib_files))
 
-; Use for displaying things in citar library nicely
+                                        ; Use for displaying things in citar library nicely
+                                        ;(use-package all-the-icons
+                                        ; :if (display-graphic-p))
+
+
+;; (use-package all-the-icons
+;;   :ensure t
+;;   :config
+;;   ;; Configuration specific to all-the-icons
+;;   )
+
+(use-package all-the-icons-dired
+  :ensure t
+  :hook (dired-mode . all-the-icons-dired-mode))
+
 (use-package all-the-icons
   :if (display-graphic-p))
 
-; -----------------------------------------------------------
-;                      CITAR
-; -----------------------------------------------------------
-; Use the citar package for displaying reference library and inserting
-; references into an org or latex document - works across both types
+;; -----------------------------------------------------------
+;;                      CITAR
+;; -----------------------------------------------------------
+;; Use the citar package for displaying reference library and inserting
+;; references into an org or latex document - works across both types
 (use-package citar
   :custom
   (citar-bibliography my/bib_files)
@@ -85,7 +95,7 @@
   (LaTeX-mode . citar-capf-setup)
   (org-mode . citar-capf-setup)
   :bind  (("C-c b" . citar-insert-citation)) ; this is the shortcut key for inserting citation
-)
+  )
 
 (after! citar
   (add-to-list 'citar-file-open-functions '("pdf" . citar-file-open)))
@@ -263,16 +273,24 @@
 ; -----------------------------------------------------------
 (use-package pdf-tools
   :config
-  ;(pdf-tools-install)
+                                        ;(pdf-tools-install)
   ;; This means that pdfs are fitted to width by default when you open them
   (setq-default pdf-view-display-size 'fit-width)
   :custom
   (pdf-annot-activate-created-annotations t "automatically annotate highlights"))
 
+;; Open PDFs with pdf-tools instead of the default doc-view
+(add-to-list 'auto-mode-alist '("\\.pdf\\'" . pdf-view-mode))
+
+;; Initialize pdf-tools
+(pdf-tools-install)
+
+
+
 ; -----------------------------------------------------------
 ;                       MARGINALIA
 ; -----------------------------------------------------------
-; This program allows for descriptions in the minibuffer
+;This program allows for descriptions in the minibuffer
 (use-package marginalia
   :config
   (marginalia-mode 1))
@@ -292,7 +310,7 @@ to IT for use in the THEN and ELSE clauses"
 
 (use-package cdlatex)
 (use-package latex-preview-pane)
-(latex-preview-pane-enable)
+;(latex-preview-pane-enable)
 
 ; Remove preamble at start of document in org to latex
 (setq org-latex-with-hyperref nil)
@@ -348,15 +366,16 @@ to IT for use in the THEN and ELSE clauses"
 	            (format "%s" file))))))
 
 ;; -----------------------------------------------------------
-;;                      DEFT
+;;                      OLIVETTI MODE - clean for writing
 ;; -----------------------------------------------------------
 (use-package olivetti
   :after citar
   :hook ((text-mode . olivetti-mode)
+         (ess-mode . olivetti-mode)
          (latex-mode . olivetti-mode)
          (markdown-mode . olivetti-mode))
   :custom
-  (olivetti-body-width 120)  ;; Set body width to 80 characters
-  (olivetti-minimum-body-width 40)
+  (olivetti-body-width 130)  ;; Set body width to 80 characters
+  (olivetti-minimum-body-width 80)
   (olivetti-recall-visual-line-mode-entry-state t))
 

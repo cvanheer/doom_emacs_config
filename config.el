@@ -33,13 +33,14 @@
 (setq user-full-name "Christina Van Heer"
       user-mail-address "christinavanheer.com")
 
+
 ; ------------------------------------------------------------------
 ; THEMES
 ; ------------------------------------------------------------------
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
-; `load-theme' function. This is the default:
-;(setq doom-theme 'doom-earl-grey)
+                                        ; `load-theme' function. This is the default:
+                                        ;(setq doom-theme 'doom-earl-grey)
 
 
 ;; (use-package! doom-nano-modeline
@@ -58,75 +59,39 @@
   ;; Enable custom neotree theme (all-the-icons must be installed!)
   (doom-themes-neotree-config)
   ;; or for treemacs users
-  ;(doom-themes-treemacs-config)
+                                        ;(doom-themes-treemacs-config)
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
 (customize-set-variable 'doom-themes-treemacs-theme "doom-colors")
 
 
-; Make comments more visible in foom-pine
-(custom-set-faces!
-  '(font-lock-comment-face :foreground "#d3d3d3"))
+(defun my/custom-theme-faces ()
+  "Set custom faces for a specific theme."
+  (when (string= doom-theme 'doom-pine)
+    (custom-set-faces
+     '(font-lock-comment-face ((t (:foreground "#d3d3d3"))))
+     ; Add more customisations here
+     )))
 
+;; Add the custom face function to the doom-load-theme-hook
+(add-hook 'doom-load-theme-hook 'my/custom-theme-faces)
 
 ;; Note: themes are stored in /Applications/Emacs.app/Contents/Resources/etc
-(add-to-list 'load-path "~/.config/doom/packages/doom-nano-modeline/")
-(add-to-list 'load-path "~/.config/doom/packages/doom-nano-testing/")
+;(add-to-list 'load-path "~/.config/doom/packages/doom-nano-modeline/")
+;(add-to-list 'load-path "~/.config/doom/packages/doom-nano-testing/")
 ; ------------------------------------------------------------------
 ; TRANSPARENT SCREEN - https://kristofferbalintona.me/posts/202206071000/
 ; ------------------------------------------------------------------
-;; (set-frame-parameter (selected-frame) 'alpha 0 7) ;
-;; (set-frame-parameter (selected-frame) 'alpha-background 0 100)   ;
-;; (add-to-list 'default-frame-alist '(alpha . 0 70))
-;; (add-to-list 'default-frame-alist '(alpha-background .0 100))
+; ------------------------------------------------------------------
+; TRANSPARENT SCREEN - https://kristofferbalintona.me/posts/202206071000/
+; ------------------------------------------------------------------
+(set-frame-parameter nil 'alpha 70);
+(set-frame-parameter nil 'alpha-background 100)
+(add-to-list 'default-frame-alist '(alpha . 70))
+(add-to-list 'default-frame-alist '(alpha-background . 0))
 
-;; ; This function needs a bit of work - does not toggle in a loop
-;; (defun my/toggle-transparency ()
-;;    (interactive)
-;;    (let ((alpha (frame-parameter nil 'alpha)))
-;;      (set-frame-parameter
-;;       nil 'alpha
-;;       (if (eql (cond ((numberp alpha) alpha)
-;;                      ((numberp (cdr alpha)) (cdr alpha))
-;;                      ;; Also handle undocumented (<active> <inactive>) form.
-;;                      ((numberp (cadr alpha)) (cadr alpha)))
-;;                100)
-;;           '(100. 70) '(100 . 100)
-;;           )
-;;       )
-;;      )
-;;    )
- ;(global-set-key (kbd "C-c s") 'my/toggle-transparency)
-(defvar my/transparency-settings '(100 85 70 55)
-  "List of background transparency settings to toggle through.")
 
-(defun my/cycle-background-transparency ()
-  "Cycle through a predefined list of background transparency settings."
-  (interactive)
-  (let* ((current-alpha (or (frame-parameter nil 'alpha-background) 100))
-         (next-alpha (or (cadr (member current-alpha my/transparency-settings))
-                         (car my/transparency-settings))))
-    (set-frame-parameter nil 'alpha-background next-alpha)
-    (set-frame-parameter nil 'alpha (cons 100 next-alpha))
-    (message "Set background transparency to %d" next-alpha)))
 
-(defun my/update-background-transparency-on-focus (frame)
-  "Update background transparency based on frame focus."
-  (if (frame-focus-state frame)
-      (set-frame-parameter frame 'alpha-background 100)
-    (set-frame-parameter frame 'alpha-background (car my/transparency-settings)))
-  (set-frame-parameter frame 'alpha (cons 100 (frame-parameter frame 'alpha-background))))
-
-;; Hook to handle frame focus change
-(add-function :after after-focus-change-function
-              (lambda ()
-                (my/update-background-transparency-on-focus (selected-frame))))
-
-;; Optional: Keybinding to toggle background transparency
-(global-set-key (kbd "C-c z") 'my/cycle-background-transparency)
-
-;; Ensure initial background transparency is set correctly
-(my/update-background-transparency-on-focus (selected-frame))
 ; ------------------------------------------------------------------
 ; TEXT / LINE WRAPPING
 ; ------------------------------------------------------------------
@@ -139,7 +104,7 @@
 ; Aggressive indenting
 (use-package aggressive-indent
   :config
-  (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
+  ;(add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
   (add-hook 'css-mode-hook #'aggressive-indent-mode)
                                         ;(global-aggressive-indent-mode 1)
 
@@ -160,18 +125,18 @@
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type t)
 
-                                        ; ------------------------------------------------------------------
-                                        ; UNDO TREE
-                                        ; ------------------------------------------------------------------
+;; ------------------------------------------------------------------
+;; UNDO TREE
+;; ------------------------------------------------------------------
 (use-package undo-tree
   :config
   (global-undo-tree-mode)
   :custom
   (undo-tree-auto-save-history nil))
 
-                                        ; ------------------------------------------------------------------
-                                        ; FONTS
-                                        ; ------------------------------------------------------------------
+;; ------------------------------------------------------------------
+;; FONTS
+;; ------------------------------------------------------------------
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
                                         ;(setq org-directory "~/org/"
@@ -179,8 +144,8 @@
                                         ; Other fonts I like if you wanna spice things up:
                                         ; - JetBrains Mono
                                         ; - Isoveska
-(setq doom-font (font-spec :family "Ubuntu Mono" :size 15)
-      doom-variable-pitch-font (font-spec :family "Ubuntu Mono" :size 15))
+(setq doom-font (font-spec :family "Ubuntu Mono" :size 12)
+      doom-variable-pitch-font (font-spec :family "Ubuntu Mono" :size 12))
 
 ; FUNCTION TO CHANGE FONT
 ; Note: Emacs specifies font size in 1/10 pt units. Therefore, a font size of 12 pt is represented as 120, which
@@ -189,7 +154,7 @@
   "Change the default font to FONT-FAMILY with FONT-SIZE."
   (interactive
    (list (completing-read "Font family: " (font-family-list))
-         (read-number "Font size (pt): " 14)))  ; Prompt for size in pt
+         (read-number "Font size (pt): " 12)))  ; Prompt for size in pt
   (set-face-attribute 'default nil
                       :family font-family
                       :height (* font-size 10)))  ; Convert pt to Emacs units
@@ -238,9 +203,10 @@
 (projectile-add-known-project "~/PhD/PROJECTS/DIARY/")
 
 
-; ------------------------------------------------------------------
-; VERTICO COMPLETION / CONSULT COMPLETION
-; ------------------------------------------------------------------
+
+                                        ; ------------------------------------------------------------------
+                                        ; VERTICO COMPLETION / CONSULT COMPLETION
+                                        ; ------------------------------------------------------------------
 
 (use-package consult
   :bind (
@@ -276,27 +242,26 @@
 (use-package vertico
   :init
   (vertico-mode 1)
-
   :config
   (setq vertico-multiform-commands
-    '((consult-line buffer)
-      (consult-line-thing-at-point buffer)
-      (consult-recent-file buffer)
-      (consult-mode-command buffer)
-      (consult-complex-command buffer)
-      (embark-bindings buffer)
-      (consult-locate buffer)
-      (consult-project-buffer buffer)
-      (consult-ripgrep buffer)
-      (consult-fd buffer)))
+        '((consult-line buffer)
+          (consult-line-thing-at-point buffer)
+          (consult-recent-file buffer)
+          (consult-mode-command buffer)
+          (consult-complex-command buffer)
+          (embark-bindings buffer)
+          (consult-locate buffer)
+          (consult-project-buffer buffer)
+          (consult-ripgrep buffer)
+          (consult-fd buffer)))
   :bind (:map vertico-map
-          ("C-k" . kill-whole-line)
-          ("C-u" . kill-whole-line)
-          ("C-o" . vertico-next-group)
-          ("<tab>" . minibuffer-complete)
-          ("M-<return>" . minibuffer-force-complete-and-exit)))
+              ("C-k" . kill-whole-line)
+              ("C-u" . kill-whole-line)
+              ("C-o" . vertico-next-group)
+              ("<tab>" . minibuffer-complete)
+              ("M-<return>" . minibuffer-force-complete-and-exit)))
 
-(setq vertico-multiform t)
+                                        ;(setq vertico-multiform t)
 
 ;; Enable Corfu for inline completion
 (use-package corfu
@@ -382,6 +347,14 @@
   :bind
   ("C-<prior>" . centaur-tabs-backward)
   ("C-<next>" . centaur-tabs-forward))
+
+;; Customize Centaur Tabs colors
+;; (custom-set-faces
+;;  '(centaur-tabs-selected ((t (:background "#3A3F4B" :foreground "#D8DEE9"))))
+;;  '(centaur-tabs-unselected ((t (:background "#2E3440" :foreground "#4C566A"))))
+;;  '(centaur-tabs-selected-modified ((t (:background "#3A3F4B" :foreground "#EBCB8B" :weight bold))))
+;;  '(centaur-tabs-unselected-modified ((t (:background "#2E3440" :foreground "#D08770" :weight bold))))
+;;  '(centaur-tabs-active-bar-face ((t (:background "#88C0D0")))))
 
 ; ------------------------------------------------------------------
 ; YASSNIPPETS
