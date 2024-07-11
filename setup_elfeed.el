@@ -143,8 +143,8 @@
 
 (push '(star elfeed-search-star-title-face) elfeed-search-face-alist)
 
-(elfeed-org)
-(elfeed)
+;(elfeed-org)
+;(elfeed)
 
 ; -------------------------------------------------
 ; ELFEED SCORE

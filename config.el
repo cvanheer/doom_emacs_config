@@ -8,26 +8,6 @@
 ;; clients, file templates and snippets. It is optional.
 ;; (setq user-full-name "John Doe"
 ;;       user-mail-address "john@doe.com")
-
-;; Doom exposes five (optional) variables for controlling fonts in Doom:
-;;
-;; - `doom-font' -- the primary font to use
-;; - `doom-variable-pitch-font' -- a non-monospace font (where applicable)
-;; - `doom-big-font' -- used for `doom-big-font-mode'; use this for
-;;   presentations or streaming.
-;; - `doom-symbol-font' -- for symbols
-;; - `doom-serif-font' -- for the `fixed-pitch-serif' face
-;;
-;; See 'C-h v doom-font' for documentation and more examples of what they
-;; accept. For example:
-;;
-;;
-;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
-;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to fPtr
-;; refresh your font settings. If Emacs still can't find your font, it  fPtranlikely
-;; wasn't installed correctly. Font issues are rarely Doom issues!
-
-
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
 (setq user-full-name "Christina Van Heer"
@@ -88,18 +68,25 @@
 (set-frame-parameter nil 'alpha 70);
 (set-frame-parameter nil 'alpha-background 100)
 (add-to-list 'default-frame-alist '(alpha . 70))
-(add-to-list 'default-frame-alist '(alpha-background . 0))
+(add-to-list 'default-frame-alist '(alpha-background . 100))
 
-
+; Scrolling on new versions of emacs - allows smooth scrolling
+(setq pixel-scroll-precision-large-scroll-height 40.0)
+(scroll-bar-mode 1)
+(set-scroll-bar-mode 'right)
 
 ; ------------------------------------------------------------------
-; TEXT / LINE WRAPPING
+; TEXT AND LINE SETTINGS
 ; ------------------------------------------------------------------
 ; Description: Gets rid of those little arrows that you click and the
 ; text unpacks
 (add-hook 'text-mode-hook 'visual-line-mode)
 (global-visual-line-mode t)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
+
+;; This determines the style of line numbers in effect. If set to `nil', line
+;; numbers are disabled. For relative line numbers, set this to `relative'.
+(setq display-line-numbers-type t)
 
 ; Aggressive indenting
 (use-package aggressive-indent
@@ -121,25 +108,43 @@
 
   )
 
-;; This determines the style of line numbers in effect. If set to `nil', line
-;; numbers are disabled. For relative line numbers, set this to `relative'.
-(setq display-line-numbers-type t)
+; Expand and contract paragraphs
+(use-package! unfill
+  :defer t
+  :bind
+  ("M-q" . unfill-toggle)
+  ("A-q" . unfill-paragraph))
 
-;; ------------------------------------------------------------------
-;; UNDO TREE
-;; ------------------------------------------------------------------
-(use-package undo-tree
-  :config
-  (global-undo-tree-mode)
-  :custom
-  (undo-tree-auto-save-history nil))
+; ------------------------------------------------------------------
+; NERD ICONS
+; ------------------------------------------------------------------
+(require 'nerd-icons)
+(add-to-list 'load-path "/Applications/Emacs.app/Contents/Resources/site-lisp")
 
-;; ------------------------------------------------------------------
+
+
+
+;; -----------------------------------------------------------------
 ;; FONTS
 ;; ------------------------------------------------------------------
-;; If you use `org' and don't want your org files in the default location below,
-;; change `org-directory'. It must be set before org loads!
-                                        ;(setq org-directory "~/org/"
+ Doom exposes five (optional) variables for controlling fonts in Doom:
+;;
+;; - `doom-font' -- the primary font to use
+;; - `doom-variable-pitch-font' -- a non-monospace font (where applicable)
+;; - `doom-big-font' -- used for `doom-big-font-mode'; use this for
+;;   presentations or streaming.
+;; - `doom-symbol-font' -- for symbols
+;; - `doom-serif-font' -- for the `fixed-pitch-serif' face
+;;
+;; See 'C-h v doom-font' for documentation and more examples of what they
+;; accept. For example:
+;;
+;;
+;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
+;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to fPtr
+;; refresh your font settings. If Emacs still can't find your font, it  fPtranlikely
+;; wasn't installed correctly. Font issues are rarely Doom issues!
+
 
                                         ; Other fonts I like if you wanna spice things up:
                                         ; - JetBrains Mono
@@ -160,6 +165,17 @@
                       :height (* font-size 10)))  ; Convert pt to Emacs units
 
 (global-set-key (kbd "C-c f") 'my/change-font)
+
+;; ------------------------------------------------------------------
+;; UNDO TREE
+;; ------------------------------------------------------------------
+(use-package undo-tree
+  :config
+  (global-undo-tree-mode)
+  :custom
+  (undo-tree-auto-save-history nil))
+
+
 ; ------------------------------------------------------------------
 ; TREEMACS & PROJECTILE - manages projects
 ; ------------------------------------------------------------------
@@ -204,9 +220,9 @@
 
 
 
-                                        ; ------------------------------------------------------------------
-                                        ; VERTICO COMPLETION / CONSULT COMPLETION
-                                        ; ------------------------------------------------------------------
+ ; ------------------------------------------------------------------
+ ; VERTICO COMPLETION / CONSULT COMPLETION
+ ; ------------------------------------------------------------------
 
 (use-package consult
   :bind (
@@ -300,18 +316,6 @@
   :config
   (which-key-mode))
 
-; ------------------------------------------------------------------
-; RANDOM SHIT
-; ------------------------------------------------------------------
-(require 'nerd-icons)
-(add-to-list 'load-path "/Applications/Emacs.app/Contents/Resources/site-lisp")
-
-; Expand and contract paragraphs
-(use-package! unfill
-  :defer t
-  :bind
-  ("M-q" . unfill-toggle)
-  ("A-q" . unfill-paragraph))
 
 ; ------------------------------------------------------------------
 ; ORG-BABEL
@@ -373,12 +377,31 @@
 (load "~/.config/doom/setup_calendar.el")
 (load "~/.config/doom/setup_org_agenda.el")
 (load "~/.config/doom/setup_latex_workflow.el")
+(load "~/.config/doom/setup_powerthesaurus.el")
 (load "~/.config/doom/setup_ox_latex_classes.el")
 (load "~/.config/doom/setup_useful_modes.el")
-                                        ;(load "~/.config/doom/setup_dashboard.el")
+;(load "~/.config/doom/setup_dashboard.el")
 (load "~/.config/doom/setup_ess.el")
 (load "~/.config/doom/setup_elfeed.el")
 (load "~/.config/doom/setup_markdown.el") ; this includes quarto mode
+
+;; ------------------------------------------------------------------
+;; FUNCTION TO OPEN FILE IN NEW FRAME
+;; ------------------------------------------------------------------
+;; Open file in new frame
+(defun my-open-file-in-new-frame ()
+  "Prompt for a file and open it in a new frame."
+  (interactive)
+  (let ((file (read-file-name "Open file: ")))
+    (select-frame (make-frame))
+    (find-file file)))
+
+;; Using global-set-key
+(global-set-key (kbd "C-c o") 'my-open-file-in-new-frame)
+
+;; Or using map! in Doom Emacs
+;; (map! "C-c o" #'my-open-file-in-new-frame)
+
 
 ; ------------------------------------------------------------------
 ; WHAT TO OPEN WHEN EMACS STARTS UP
@@ -394,27 +417,3 @@
 
 (setq-default inhibit-startup-buffer-menu t)
 
-; ------------------------------------------------------------------
-; POWER THESAURUS
-; ------------------------------------------------------------------
-(use-package powerthesaurus
-  :bind
-  ("M-`" . powerthesaurus-lookup-word-dwim))
-
-
-;; ------------------------------------------------------------------
-;; THESIS STARTUP ROUTINE
-;; ------------------------------------------------------------------
-;; Open file in new frame
-(defun my-open-file-in-new-frame ()
-  "Prompt for a file and open it in a new frame."
-  (interactive)
-  (let ((file (read-file-name "Open file: ")))
-    (select-frame (make-frame))
-    (find-file file)))
-
-;; Using global-set-key
-(global-set-key (kbd "C-c o") 'my-open-file-in-new-frame)
-
-;; Or using map! in Doom Emacs
-;; (map! "C-c o" #'my-open-file-in-new-frame)

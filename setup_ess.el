@@ -9,7 +9,7 @@
 (setq indent-guide-recursive t)
 (setq inferior-R-args "--no-save --no-restore-data")
 
-                                        ; ESS
+; ESS
 (use-package! ess
   :config
   (require 'ess-site)
@@ -44,6 +44,8 @@
   (define-key ess-mode-map (kbd "<C-return>") 'ess-eval-paragraph-and-step)
   (define-key ess-mode-map (kbd "C-c C-r") 'ess-eval-region-or-function-or-paragraph-and-step)
   (define-key ess-mode-map (kbd "C-c C-e") 'ess-eval-buffer-from-beg-to-here)
+  (define-key ess-mode-map (kbd "<up>") 'comint-previous-input)
+  (define-key ess-mode-map (kbd "<down>") 'comint-next-input)
 
   ;; Load company-mode only for ESS
   (use-package company
@@ -71,35 +73,56 @@
   :after ess)
 
 ;;https://www.reddit.com/r/emacs/comments/15ggow0/i_need_some_help_with_my_rstudio_layout_for_ess/
-(defun my/rstudio-layout ()
-  "Set up a layout similar to RStudio."
-  (interactive)
-  (add-to-list 'display-buffer-alist
-               `("^\\*R:.*"
-                 (display-buffer-reuse-window display-buffer-at-bottom)
-                 (window-height . 0.3)
-                 (reusable-frames . nil)))
-  (add-to-list 'display-buffer-alist
-               `("^\\*ess-help.*^\\*essgd:.*"
-                 (display-buffer-reuse-window display-buffer-in-side-window)
-                 (side . right)
-                 (slot . 1)
-                 (window-width . 0.33)
-                 (reusable-frames . nil)))
-  (add-to-list 'display-buffer-alist
-               `("^\\*ess-rdired.*"
-                 (display-buffer-reuse-window display-buffer-in-side-window)
-                 (side . right)
-                 (slot . 2)
-                 (window-width . 0.33)
-                 (reusable-frames . nil)))
+(require 'projectile)
 
-  (let ((ess-startup-directory 'default-directory)
-        (ess-ask-for-ess-directory nil))
-    (delete-other-windows)
-    (ess-switch-to-ESS t)
-    (ess-help "help")
-    ))
+
+(defun my/rstudio-layout () ""
+       (interactive)
+        (projectile-switch-project)  ; Prompt to select a Projectile project
+  (let* ((project-root (projectile-project-root))
+         (files (projectile-current-project-files))
+         (default-file (completing-read "Choose a file: " files nil t))) ; Prompt to choose a file
+    (find-file (expand-file-name default-file project-root)))
+
+       (add-to-list 'display-buffer-alist
+                    `("^\\*help\\[R\\]"
+                      (display-buffer-reuse-window display-buffer-in-side-window)
+                      (side . right)
+                      (slot . 1)
+                      (window-width . 0.33)
+                      (reusable-frames . nil)))
+       (add-to-list 'display-buffer-alist
+                     '("^\\*ess-help.*\\|^\\*essgd:.*"
+                      (display-buffer-reuse-window display-buffer-in-side-window)
+                      (side . right)
+                      (slot . 1)
+                      (window-width . 0.33)
+                      (reusable-frames . nil)))
+       (add-to-list 'display-buffer-alist
+                    `("^\\*R.*\\*"
+                      (display-buffer-reuse-window display-buffer-at-bottom)
+                      (window-width . 0.5)
+                      (dedicated . t)))
+       (add-to-list 'display-buffer-alist
+                    `("^\\*R dired\\*"
+                      (display-buffer-reuse-window display-buffer-in-side-window)
+                      (side . right)
+                      (slot . -1)
+                      (window-width . 0.33)
+                      (reusable-frames . nil)))
+
+   (set-frame-parameter (selected-frame) 'alpha (list 90 0))
+   (global-display-line-numbers-mode t)
+       (let ((ess-startup-directory 'default-directory)
+             (ess-ask-for-ess-directory nil))
+         (delete-other-windows)
+         (ess-switch-to-ESS t)
+         (ess-help "help")
+         (ess-rdired)))
+
+;; Optional: Define a keybinding for this function
+(global-set-key (kbd "C-c r") 'my/rstudio-layout)
+
 
 ;; ------------------------------------------------------------------
 ;; PLOTTING
