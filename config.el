@@ -59,21 +59,29 @@
 ;; Note: themes are stored in /Applications/Emacs.app/Contents/Resources/etc
 ;(add-to-list 'load-path "~/.config/doom/packages/doom-nano-modeline/")
 ;(add-to-list 'load-path "~/.config/doom/packages/doom-nano-testing/")
+
 ; ------------------------------------------------------------------
 ; TRANSPARENT SCREEN - https://kristofferbalintona.me/posts/202206071000/
 ; ------------------------------------------------------------------
-; ------------------------------------------------------------------
-; TRANSPARENT SCREEN - https://kristofferbalintona.me/posts/202206071000/
-; ------------------------------------------------------------------
-(set-frame-parameter nil 'alpha 70);
+(set-frame-parameter nil 'alpha 80);
 (set-frame-parameter nil 'alpha-background 100)
-(add-to-list 'default-frame-alist '(alpha . 70))
+(add-to-list 'default-frame-alist '(alpha . 80))
 (add-to-list 'default-frame-alist '(alpha-background . 100))
 
 ; Scrolling on new versions of emacs - allows smooth scrolling
 (setq pixel-scroll-precision-large-scroll-height 40.0)
 (scroll-bar-mode 1)
 (set-scroll-bar-mode 'right)
+
+(defun my/custom-transparency ()
+  "Prompts for alpha level. Note background remains 100."
+  (interactive)
+  (let ((alpha_number (read-number "Enter alpha level 0 (transparent) to 100 (opaque): ")))
+    (set-frame-parameter nil 'alpha alpha_number)
+    (add-to-list 'default-frame-alist `(alpha . ,alpha_number)))
+)
+; C-c + s is a shortcut to this function
+(global-set-key (kbd "C-c s") 'my/custom-transparency)
 
 ; ------------------------------------------------------------------
 ; TEXT AND LINE SETTINGS
