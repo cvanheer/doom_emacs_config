@@ -1,5 +1,4 @@
-;;; ess_setup.el -*- lexical-binding: t; -*-
-
+; ess_setup.el
 ; ------------------------------------------------------------------
 ; ESS - Emacs Speaks Statistics
 ; Description: this is what I use for coding in R
@@ -85,40 +84,48 @@
     (find-file (expand-file-name default-file project-root)))
 
        (add-to-list 'display-buffer-alist
-                    `("^\\*help\\[R\\]"
+                     '("^\\*ess-help.*\\|^\\*essgd:.*\\|^\\*help\\[R\\]"
                       (display-buffer-reuse-window display-buffer-in-side-window)
                       (side . right)
-                      (slot . 1)
-                      (window-width . 0.33)
+                      (slot . 2)
+                      (window-height . 0.25)
+                      (window-width . 0.40)
                       (reusable-frames . nil)))
-       (add-to-list 'display-buffer-alist
-                     '("^\\*ess-help.*\\|^\\*essgd:.*"
-                      (display-buffer-reuse-window display-buffer-in-side-window)
-                      (side . right)
-                      (slot . 1)
-                      (window-width . 0.33)
-                      (reusable-frames . nil)))
+
        (add-to-list 'display-buffer-alist
                     `("^\\*R.*\\*"
-                      (display-buffer-reuse-window display-buffer-at-bottom)
-                      (window-width . 0.5)
-                      (dedicated . t)))
+                      (display-buffer-reuse-window display-buffer-in-side-window)
+                      (side . right)
+                      (slot . 1)
+                (window-height . 0.75)
+                      (window-width . 0.40)
+                      (dedicated . t)
+                      ))
+
        (add-to-list 'display-buffer-alist
                     `("^\\*R dired\\*"
                       (display-buffer-reuse-window display-buffer-in-side-window)
                       (side . right)
-                      (slot . -1)
-                      (window-width . 0.33)
+                      (slot . 2)
+                      (window-width . 0.40)
                       (reusable-frames . nil)))
 
-   (set-frame-parameter (selected-frame) 'alpha (list 90 0))
+   ; Optimise aesthetics for coding in R
+   (set-frame-parameter (selected-frame) 'alpha (list 100 0))
+   (load-theme 'doom-solarized-light)
    (global-display-line-numbers-mode t)
+
        (let ((ess-startup-directory 'default-directory)
              (ess-ask-for-ess-directory nil))
+
          (delete-other-windows)
-         (ess-switch-to-ESS t)
+         (ess-switch-to-ESS t) ; major mode
          (ess-help "help")
-         (ess-rdired)))
+         (ess-rdired)
+         )
+
+       )
+
 
 ;; Optional: Define a keybinding for this function
 (global-set-key (kbd "C-c r") 'my/rstudio-layout)
@@ -142,9 +149,7 @@
 
 ;; Rstudio like setup in ESS - interactive function so you can call with M-x
 ;;(use-package! ess-plot
-                                        ;:defer t)
-
-
+ ;:defer t)
 
 (defun clear-shell ()
   (interactive)

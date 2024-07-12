@@ -33,7 +33,9 @@
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
         doom-themes-enable-italic t) ; if nil, italics is universally disabled
-  (load-theme 'doom-pine t)
+ (load-theme 'doom-pine t)
+;(load-theme 'doom-solarized-light t)
+
   ;; Enable flashing mode-line on errors
   (doom-themes-visual-bell-config)
   ;; Enable custom neotree theme (all-the-icons must be installed!)
@@ -46,12 +48,14 @@
 
 
 (defun my/custom-theme-faces ()
-  "Set custom faces for a specific theme."
-  (when (string= doom-theme 'doom-pine)
+  "Set custom faces for specific themes."
+  (when (string= (symbol-name doom-theme) "doom-pine")
     (custom-set-faces
-     '(font-lock-comment-face ((t (:foreground "#d3d3d3"))))
-     ; Add more customisations here
-     )))
+     '(font-lock-comment-face ((t (:foreground "#d3d3d3"))))))
+
+  (when (string= (symbol-name doom-theme) "doom-solarized-light")
+    (custom-set-faces
+     '(font-lock-comment-face ((t (:foreground "#2a2a2a")))))))
 
 ;; Add the custom face function to the doom-load-theme-hook
 (add-hook 'doom-load-theme-hook 'my/custom-theme-faces)
@@ -63,15 +67,15 @@
 ; ------------------------------------------------------------------
 ; TRANSPARENT SCREEN - https://kristofferbalintona.me/posts/202206071000/
 ; ------------------------------------------------------------------
-(set-frame-parameter nil 'alpha 80);
+(set-frame-parameter nil 'alpha 75);
 (set-frame-parameter nil 'alpha-background 100)
-(add-to-list 'default-frame-alist '(alpha . 80))
+(add-to-list 'default-frame-alist '(alpha . 75))
 (add-to-list 'default-frame-alist '(alpha-background . 100))
 
 ; Scrolling on new versions of emacs - allows smooth scrolling
-(setq pixel-scroll-precision-large-scroll-height 40.0)
-(scroll-bar-mode 1)
-(set-scroll-bar-mode 'right)
+;(setq pixel-scroll-precision-large-scroll-height 100.0)
+;(scroll-bar-mode 1)
+;(set-scroll-bar-mode 'right)
 
 (defun my/custom-transparency ()
   "Prompts for alpha level. Note background remains 100."
@@ -88,8 +92,9 @@
 ; ------------------------------------------------------------------
 ; Description: Gets rid of those little arrows that you click and the
 ; text unpacks
-(add-hook 'text-mode-hook 'visual-line-mode)
-(global-visual-line-mode t)
+;(add-hook 'text-mode-hook 'visual-line-mode)
+;(global-visual-line-mode t)
+
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
@@ -101,16 +106,15 @@
   :config
   ;(add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
   (add-hook 'css-mode-hook #'aggressive-indent-mode)
-                                        ;(global-aggressive-indent-mode 1)
+  ;(global-aggressive-indent-mode 1)
 
-
-                                        ; Define a function to enable aggressive-indent-mode
+; Define a function to enable aggressive-indent-mode and add to ESS startup hook so it runs everytime
   (defun enable-aggressive-indent ()
     "Enable aggressive-indent-mode."
     (interactive)
     (aggressive-indent-mode 1))
 
-                                        ; Activate aggressive-indent-mode in ess-r-mode (R mode)
+    ; Activate aggressive-indent-mode in ess-r-mode (R mode)
   (add-hook 'ess-r-mode-hook 'enable-aggressive-indent)
  ;(add-hook 'ess-lisp-mode-hook 'enable-aggressive-indent)
 
@@ -122,6 +126,19 @@
   :bind
   ("M-q" . unfill-toggle)
   ("A-q" . unfill-paragraph))
+
+ ;; Clean code folding via Outline minor mode.
+ (add-hook 'prog-mode-hook 'outline-minor-mode)
+ (add-hook 'text-mode-hook 'outline-minor-mode)
+
+ ;; Show all headings but no content in Outline mode.
+ (add-hook 'outline-minor-mode-hook
+           (defun my/outline-overview ()
+             "Show only outline headings."
+             (outline-show-all)
+             (outline-hide-body)))
+
+
 
 ; ------------------------------------------------------------------
 ; NERD ICONS
@@ -135,7 +152,7 @@
 ;; -----------------------------------------------------------------
 ;; FONTS
 ;; ------------------------------------------------------------------
- Doom exposes five (optional) variables for controlling fonts in Doom:
+ ;Doom exposes five (optional) variables for controlling fonts in Doom:
 ;;
 ;; - `doom-font' -- the primary font to use
 ;; - `doom-variable-pitch-font' -- a non-monospace font (where applicable)
@@ -378,6 +395,10 @@
   :config
   (setq yas-snippet-dirs '("~/.config/doom/yas-snippets"))
   (yas-global-mode 1))
+
+; Add in some org-mode snippets
+(add-to-list 'org-structure-template-alist
+             '("r" "#+NAME: ?\n#+BEGIN_SRC: R \n\n#+END_SRC"))
 
 ; ------------------------------------------------------------------
 ; EMACS SETUP
