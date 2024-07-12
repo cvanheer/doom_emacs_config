@@ -72,6 +72,14 @@
 (add-to-list 'default-frame-alist '(alpha . 75))
 (add-to-list 'default-frame-alist '(alpha-background . 100))
 
+; ------------------------------------------------------------------
+; MOUSE SCROLLING / SCREEN SCROLLING
+; ------------------------------------------------------------------
+(setq scroll-conservatively 101
+      scroll-preserve-screen-position 1)
+(define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
+(define-key evil-normal-state-map (kbd "C-d") 'evil-scroll-down)
+
 ; Scrolling on new versions of emacs - allows smooth scrolling
 ;(setq pixel-scroll-precision-large-scroll-height 100.0)
 ;(scroll-bar-mode 1)
