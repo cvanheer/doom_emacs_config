@@ -75,7 +75,15 @@
 (require 'projectile)
 
 
-(defun my/rstudio-layout () ""
++--------------------+--------------------+
+|                    |                    |
+|    R Script        |   R Console        |
+|                    |--------------------|
+|                    |  Other ESS Buffers |
++--------------------+--------------------+
+
+(defun my/rstudio-layout ()
+  "Layout which looks similar to my preferred setup in Rstudio"
        (interactive)
         (projectile-switch-project)  ; Prompt to select a Projectile project
   (let* ((project-root (projectile-project-root))
